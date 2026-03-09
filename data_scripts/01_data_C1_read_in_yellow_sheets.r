@@ -13,10 +13,10 @@ type <- "v1"
 year <- 2025
 
 # File names 2024
-dnkFile <- "DC_Annex_HAWG3 her.27.20-24 template_DNK_2025.xlsx"
+dnkFile <- "DC_Annex_HAWG3 her.27.20-24 template_DNK_2025_v2.xlsx"
 gerFile <- "2026_DC_Annex_HAWG3 her.27.20-24_2025_GER.xlsx"
 polFile <- "PL_DC_Annex_HAWG3 her.27.20-24_PL_2026.xlsx"
-sweFile <- "SE_2026 DC HAWG her.27.20-24 YellowSheet_v2.xlsx"
+sweFile <- "SE_2026 DC HAWG her.27.20-24 YellowSheet_v3.xlsx"
 norFile <- "2026 DC HAWG her.27.20-24 NO_v2.xlsx"
 
 

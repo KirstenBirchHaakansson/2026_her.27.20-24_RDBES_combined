@@ -60,10 +60,28 @@ draft.data(data.files = "submitted_data/DC_Annex_HAWG3 her.27.20-24 template_DNK
            file = T,
            append = T)
 
+draft.data(data.files = "submitted_data/DC_Annex_HAWG3 her.27.20-24 template_DNK_2025_v2.xlsx",
+           data.scripts = NULL,
+           originator = "Corrected by kibi",
+           title = "Forgot to delete old CANUN in area 22",
+           period = "2025",
+           access = "Restricted",
+           file = T,
+           append = T)
+
 draft.data(data.files = "submitted_data/SE_2026 DC HAWG her.27.20-24 YellowSheet_v2.xlsx",
            data.scripts = NULL,
            originator = "Data submitted to HAWG",
            title = "Data from Sweden",
+           period = "2025",
+           access = "Restricted",
+           file = T,
+           append = T)
+
+draft.data(data.files = "submitted_data/SE_2026 DC HAWG her.27.20-24 YellowSheet_v3.xlsx",
+           data.scripts = NULL,
+           originator = "Corrected by kibi",
+           title = "One of the fleet was wrong in the template",
            period = "2025",
            access = "Restricted",
            file = T,
