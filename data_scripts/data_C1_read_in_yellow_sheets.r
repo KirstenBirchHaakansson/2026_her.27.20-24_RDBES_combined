@@ -10,14 +10,14 @@ options("scipen" = 1000, digits = 4)
 
 type <- "v1"
 
-year <- 2024
+year <- 2025
 
 # File names 2024
-dnkFile <- "DC_Annex_HAWG3 her.27.20-24 template_DNK_2024.xlsx"
-gerFile <- "2025_DC_Annex_HAWG3 her.27.20-24_2024_GER.xlsx"
-polFile <- "DC_Annex_HAWG3 her.27.20-24_PL_rev_MA.xlsx"
-sweFile <- "SE_2025 DC HAWG her.27.20-24 YellowSheet_v3.xlsx"
-norFile <- "DC_Annex_HAWG3 her.27.20-24_NOR2024_v4.xlsx"
+dnkFile <- "DC_Annex_HAWG3 her.27.20-24 template_DNK_2025.xlsx"
+gerFile <- "2026_DC_Annex_HAWG3 her.27.20-24_2025_GER.xlsx"
+polFile <- "PL_DC_Annex_HAWG3 her.27.20-24_PL_2026.xlsx"
+sweFile <- "SE_2026 DC HAWG her.27.20-24 YellowSheet_v2.xlsx"
+norFile <- "NO_2026 DC HAWG her.27.20-24 NO.xlsx"
 
 
 # Read in data ----
@@ -437,12 +437,12 @@ canum2$noAge <- ifelse(is.na(canum2$noAge), 0, canum2$noAge)
 # length1$noLength<-ifelse(is.na(length1$noLength), 0, length1$noLength)
 # length1$noAge<-ifelse(is.na(length1$noAge), 0, length1$noAge)
 
-sw <-
-  subset(canum2, ctry == "Sweden" &
-           area %in% c("27.3.a.20", "27.3.a.21"))
-rest <-
-  subset(canum2,!(ctry == "Sweden" &
-                    area %in% c("27.3.a.20", "27.3.a.21")))
+# sw <-
+#   subset(canum2, ctry == "Sweden" &
+#            area %in% c("27.3.a.20", "27.3.a.21"))
+# rest <-
+#   subset(canum2,!(ctry == "Sweden" &
+#                     area %in% c("27.3.a.20", "27.3.a.21")))
 
 # SOP correction ----
 
@@ -508,24 +508,6 @@ write.table(
   na = ""
 )
 
-saveRDS(sw,
-        paste(
-          "data/",
-          "C1_SWE_her2024_fleet_C_D_before_merge_", year, ".rds",
-          sep = ""
-        ))
-
-write.table(
-  sw,
-  paste(
-    "data/",
-    "C1_SWE_her2024_fleet_C_D_before_merge_", year, ".csv",
-    sep = ""
-  ),
-  sep = ",",
-  row.names = F,
-  na = ""
-)
 
 saveRDS(samp, paste("data/", "C1_her2024_samples_", year, ".rds", sep = ""))
 write.table(
