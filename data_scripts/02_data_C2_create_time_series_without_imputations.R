@@ -56,6 +56,12 @@ old$subFleet[old$subFleet == "F - passive"] <- "passive"
 old$subFleet[old$subFleet == "F - passive"] <- "passive"
 old$subFleet[old$subFleet == "F - active"] <- "trawl >= 32mm" # This may not be correct
 
+# Correct subFleet in area 22-24
+old$subFleet[old$area %in% c("27.3.b.23","27.3.c.22","27.3.d.24") & old$subFleet == "trawl < 32mm"] <- "active < 32mm"
+
+old$subFleet[old$area %in% c("27.3.b.23","27.3.c.22","27.3.d.24") & old$subFleet == "trawl >= 32mm"] <- "active >= 32mm"
+
+# Fleet
 
 old$fleet[old$subFleet == "passive" &
             old$area %in% c("27.3.a.20", "27.3.a.21")] <- "C"
