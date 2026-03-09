@@ -20,6 +20,8 @@ library(DT)
 
 options(scipen = 999)
 
+year_impute <- 2025
+years_time_series <- c(2000:year_impute)
 
 path_boot <- "../boot/data/historical_data/sc_sheets_old_format/"
 path_data <- "../data/"
@@ -27,7 +29,7 @@ path_data <- "../data/"
 
 ```{r}
 
-dat <-  read.csv(paste0("../data/10_updated_canum_without_imputations_2000_2024.csv"), sep = ";")
+dat <-  readRDS(paste0("./data/C2_her2024_canum_without_imputations_2000_2025.rds"))
 
 unique(dat$year)
 
@@ -46,7 +48,7 @@ dat_unique <- distinct(dat, ctry, year, area, fleet, quarter, subFleet)
 dat_unique$id <- row.names(dat_unique)
 dat <- left_join(dat, dat_unique)
 
-check_fleets <- arrange(distinct(dat, ctry, area, fleet, subFleet), area, fleet, subFleet)
+check_fleets <- arrange(distinct(subset(dat, year == year_impute), year, ctry, area, fleet, subFleet), area, fleet, subFleet)
 ```
 
 ## Check fleets
@@ -66,7 +68,7 @@ class = 'cell-border stripe')
 dat_with_bio_0 <- subset(dat, !(is.na(weca_g)))
 
 dat_with_bio <- subset(dat, id %in% dat_with_bio_0$id)
-dat_without_bio <- subset(dat, !(id %in% dat_with_bio_0$id))
+dat_without_bio <- subset(dat, !(id %in% dat_with_bio_0$id) & year == year_impute)
 
 # dat_without_bio <- select(dat_without_bio, -weca)
 
@@ -241,7 +243,7 @@ dat_without_bio$level_6 <- paste(
   sep = " - "
 )
 
-no_years <- length(unique(dat_without_bio$year)) - 1
+no_years <- years_time_series - 1
 max_year <- max(dat_with_bio$year)
 
 for (y in c(1:no_years)) {
@@ -262,31 +264,34 @@ for (y in c(1:no_years)) {
 
 level_now <- as.numeric(stringr::str_extract(names(dat_without_bio)[ncol(dat_without_bio)], "[:digit:]+"))
 
-for (y in c(1:no_years)) {
-  for (l in c(1:6)) {
-    eval(parse(
-      text = paste0("dat_with_bio$level_",
-                    (level_now + l + (6 * (y - 1))), " <- dat_with_bio$level_", l)
-    ))
+# Loop forward in time
+# Not relevant for a normal assessement year
 
-    eval(parse(
-      text = paste0("dat_without_bio$level_",
-        (level_now + l + (6 * (y - 1))), " <- dat_without_bio$level_", l)
-    ))
-
-    for (q in c(1:nrow(dat_without_bio))) {
-      new_year <- as.numeric(stringr::str_extract(dat_without_bio[q, max(ncol(dat_without_bio))], "^[:digit:]+")) + y
-      dat_without_bio[q, max(ncol(dat_without_bio))] <- gsub("^\\d+", new_year , dat_without_bio[q, max(ncol(dat_without_bio))])
-    }
-
-  }
-
-}
-
-level_now <- as.numeric(stringr::str_extract(names(dat_without_bio)[ncol(dat_without_bio)], "[:digit:]+"))
+# for (y in c(1:no_years)) {
+#   for (l in c(1:6)) {
+#     eval(parse(
+#       text = paste0("dat_with_bio$level_",
+#                     (level_now + l + (6 * (y - 1))), " <- dat_with_bio$level_", l)
+#     ))
+# 
+#     eval(parse(
+#       text = paste0("dat_without_bio$level_",
+#         (level_now + l + (6 * (y - 1))), " <- dat_without_bio$level_", l)
+#     ))
+# 
+#     for (q in c(1:nrow(dat_without_bio))) {
+#       new_year <- as.numeric(stringr::str_extract(dat_without_bio[q, max(ncol(dat_without_bio))], "^[:digit:]+")) + y
+#       dat_without_bio[q, max(ncol(dat_without_bio))] <- gsub("^\\d+", new_year , dat_without_bio[q, max(ncol(dat_without_bio))])
+#     }
+# 
+#   }
+# 
+# }
+# 
+# level_now <- as.numeric(stringr::str_extract(names(dat_without_bio)[ncol(dat_without_bio)], "[:digit:]+"))
 
 # Define levels
-## Level 295
+## Level 295 - this depends on level_now above, so level_now + 1
 
 dat_with_bio$level_295 <- paste(
   dat_with_bio$year,
