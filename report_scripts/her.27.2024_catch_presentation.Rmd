@@ -19,7 +19,7 @@ library(RColorBrewer)
 library(knitr)
 
 path_input <- "/data"
-year_0 <- 2024
+year_0 <- 2025
 year_a <- year_0-1
 year_b <- year_0-2
 year_c <- year_0-3
@@ -88,17 +88,17 @@ canum <-
   ))
 
 canum <- subset(canum, year == year_0)
+canum$year <- as.integer(canum$year)
 
 ## CANUM from previous years
 
-canum_a <-
-  readRDS(paste(
-    "../boot/data/data_from_past_years/",
-    "C1_her2024_canum_without_imputations_", year_a, ".rds",
+canum_time <- read.csv(paste(
+    "../boot/data/data_from_bm/",
+    "10_updated_canum_without_imputations_2000_2024.csv",
     sep = ""
-  ))
+  ), sep = ";")
 
-canum_a <- subset(canum_a, year == year_a)
+canum_a <- subset(canum_time, year == year_a)
 canum_a$subFleet[canum_a$subFleet %in% c("C - passive", "F - passive")] <- "passive"
 canum_a$subFleet[canum_a$subFleet %in% c("C - purse seine")] <- "purse seine"
 canum_a$subFleet[canum_a$subFleet %in% c("C - trawl")] <- "trawl >= 32mm"
@@ -106,29 +106,11 @@ canum_a$subFleet[canum_a$subFleet %in% c("D")] <- "trawl < 32mm"
 # Below Polish sampling of by-caught herring in the sprat fishery
 canum_a$subFleet[canum_a$subFleet %in% c("F - active")] <- "active < 32mm" 
 
-canum_b <-
-  readRDS(paste(
-    "../boot/data/data_from_past_years/",
-    "C1_her2024_canum_without_imputations_", year_b, ".rds",
-    sep = ""
-  ))
-canum_b <- subset(canum_b, year == year_b)
+canum_b <- subset(canum_time, year == year_b)
 
-canum_c <-
-  readRDS(paste(
-    "../boot/data/data_from_past_years/",
-    "C1_her2024_canum_without_imputations_", year_c, ".rds",
-    sep = ""
-  ))
-canum_c <- subset(canum_c, year == year_c)
+canum_c <- subset(canum_time, year == year_c)
 
-canum_d <-
-  readRDS(paste(
-    "../boot/data/data_from_past_years/",
-    "C1_her2024_canum_without_imputations_", year_d, ".rds",
-    sep = ""
-  ))
-canum_d <- subset(canum_d, year == year_d)
+canum_d <- subset(canum_time, year == year_d)
 
 canum_3 <- bind_rows(canum, canum_a, canum_b, canum_c, canum_d)
 
@@ -139,95 +121,95 @@ canum_3$quarter <- as.factor(canum_3$quarter)
 canum_3$subFleet <- as.factor(canum_3$subFleet)
 canum_3$year <- as.numeric(canum_3$year)
 
-mis <- readRDS(paste(
-    "../data/",
-    "C5_her2024_canum_with_imputations_subfleets_", year_0, ".rds",
-    sep = ""
-  ))
+# mis <- readRDS(paste(
+#     "../data/",
+#     "C5_her2024_canum_with_imputations_subfleets_", year_0, ".rds",
+#     sep = ""
+#   ))
+# 
+# mis <- distinct(mis, ctry, year, area, fleet, subFleet, quarter, catch_t, 
+#                 noSamples, noLength, noAge, comment, comment1) 
+# 
+# mis$ctry <- as.factor(mis$ctry)
+# mis$area <- as.factor(mis$area)
+# mis$fleet <- as.factor(mis$fleet)
+# mis$quarter <- as.factor(mis$quarter)
+# mis$subFleet <- as.factor(mis$subFleet)
+# mis$year <- as.numeric(mis$year)
 
-mis <- distinct(mis, ctry, year, area, fleet, subFleet, quarter, catch_t, 
-                noSamples, noLength, noAge, comment, comment1) 
-
-mis$ctry <- as.factor(mis$ctry)
-mis$area <- as.factor(mis$area)
-mis$fleet <- as.factor(mis$fleet)
-mis$quarter <- as.factor(mis$quarter)
-mis$subFleet <- as.factor(mis$subFleet)
-mis$year <- as.numeric(mis$year)
-
-splitted <- read.csv(paste(
-    "../data/",
-    "C7_wbss_multi_fleet_", year_0, ".csv",
-    sep = ""
-  ))
-
-splitted_a <- read.csv(paste(
-    "../boot/data/data_from_past_years/",
-    "C7_wbss_multi_fleet_", year_a, ".csv",
-    sep = ""
-  ))
-
-splitted_b <- read.csv(paste(
-    "../boot/data/data_from_past_years/",
-    "C7_wbss_multi_fleet_", year_b, ".csv",
-    sep = ""
-  ))
-
-splitted_c <- read.csv(paste(
-    "../boot/data/data_from_past_years/",
-    "C7_wbss_multi_fleet_", year_c, "_12-4_diff_ages.csv",
-    sep = ""
-  ))
-
-splitted_d <- read.csv(paste(
-    "../boot/data/data_from_past_years/",
-    "C7_wbss_multi_fleet_", year_d, ".csv",
-    sep = ""
-  ))
-
-splitted_wbss <- rbind(splitted, splitted_a, splitted_b, splitted_c, splitted_d)
-splitted_wbss$stock <- "WBSS" 
-
-splitted_wbss <- rename(splitted_wbss, "canum_1000" = "wbss_canum_1000", "caton" = "wbss_caton")
-
-splitted <- read.csv(paste(
-    "../data/",
-    "C7_nsas_input_fleet_", year_0, ".csv",
-    sep = ""
-  ))
-
-splitted_a <- read.csv(paste(
-    "../boot/data/data_from_past_years/",
-    "C7_nsas_input_fleet_", year_a, ".csv",
-    sep = ""
-  ))
-
-splitted_b <- read.csv(paste(
-    "../boot/data/data_from_past_years/",
-    "C7_nsas_input_fleet_", year_b, ".csv",
-    sep = ""
-  ))
-
-splitted_c <- read.csv(paste(
-    "../boot/data/data_from_past_years/",
-    "C7_nsas_input_fleet_", year_c, "_12-4_diff_ages.csv",
-    sep = ""
-  ))
-
-splitted_d <- read.csv(paste(
-    "../boot/data/data_from_past_years/",
-    "C7_nsas_input_fleet_", year_d, "_12-4.csv",
-    sep = ""
-  ))
-
-splitted_d$quarter <- 1
-
-splitted_nsas <- rbind(splitted, splitted_a, splitted_b, splitted_c, splitted_d)
-splitted_nsas$stock <- "NSAS"
-
-splitted_nsas <- rename(splitted_nsas, "canum_1000" = "nsas_canum_1000", "caton" = "nsas_caton")
-
-splitted <- rbind(select(splitted_nsas, -quarter), splitted_wbss)
+# splitted <- read.csv(paste(
+#     "../data/",
+#     "C7_wbss_multi_fleet_", year_0, ".csv",
+#     sep = ""
+#   ))
+# 
+# splitted_a <- read.csv(paste(
+#     "../boot/data/data_from_past_years/",
+#     "C7_wbss_multi_fleet_", year_a, ".csv",
+#     sep = ""
+#   ))
+# 
+# splitted_b <- read.csv(paste(
+#     "../boot/data/data_from_past_years/",
+#     "C7_wbss_multi_fleet_", year_b, ".csv",
+#     sep = ""
+#   ))
+# 
+# splitted_c <- read.csv(paste(
+#     "../boot/data/data_from_past_years/",
+#     "C7_wbss_multi_fleet_", year_c, "_12-4_diff_ages.csv",
+#     sep = ""
+#   ))
+# 
+# splitted_d <- read.csv(paste(
+#     "../boot/data/data_from_past_years/",
+#     "C7_wbss_multi_fleet_", year_d, ".csv",
+#     sep = ""
+#   ))
+# 
+# splitted_wbss <- rbind(splitted, splitted_a, splitted_b, splitted_c, splitted_d)
+# splitted_wbss$stock <- "WBSS" 
+# 
+# splitted_wbss <- rename(splitted_wbss, "canum_1000" = "wbss_canum_1000", "caton" = "wbss_caton")
+# 
+# splitted <- read.csv(paste(
+#     "../data/",
+#     "C7_nsas_input_fleet_", year_0, ".csv",
+#     sep = ""
+#   ))
+# 
+# splitted_a <- read.csv(paste(
+#     "../boot/data/data_from_past_years/",
+#     "C7_nsas_input_fleet_", year_a, ".csv",
+#     sep = ""
+#   ))
+# 
+# splitted_b <- read.csv(paste(
+#     "../boot/data/data_from_past_years/",
+#     "C7_nsas_input_fleet_", year_b, ".csv",
+#     sep = ""
+#   ))
+# 
+# splitted_c <- read.csv(paste(
+#     "../boot/data/data_from_past_years/",
+#     "C7_nsas_input_fleet_", year_c, "_12-4_diff_ages.csv",
+#     sep = ""
+#   ))
+# 
+# splitted_d <- read.csv(paste(
+#     "../boot/data/data_from_past_years/",
+#     "C7_nsas_input_fleet_", year_d, "_12-4.csv",
+#     sep = ""
+#   ))
+# 
+# splitted_d$quarter <- 1
+# 
+# splitted_nsas <- rbind(splitted, splitted_a, splitted_b, splitted_c, splitted_d)
+# splitted_nsas$stock <- "NSAS"
+# 
+# splitted_nsas <- rename(splitted_nsas, "canum_1000" = "nsas_canum_1000", "caton" = "nsas_caton")
+# 
+# splitted <- rbind(select(splitted_nsas, -quarter), splitted_wbss)
 ```
 
 ```{r set_col, include = F}
@@ -246,21 +228,8 @@ names(ddc.col)  <- ddc
 
 ### Versions
 
-2025-03-09-v1 - The presentation is mainly updated in relation to imputations in 27.3.a
+202-03-09-v1 - 1st version
 
-2025-03-09-v2 - Updated with Norwegian data and agreed imputations, plus more plots and tables. Still only done for area 27.3.a
-
-2025-03-09-v3 - Included slides for area 22-24. Still need the maps and maybe more
-
-2025-03-11-v4 - Included decision and results from area 22-24. The resulting imputations are coming from the output instead of the input file, which is a more correct check
-
-2025-03-11-v5 - Updated Polish data
-
-2025-03-17-v6 - Updating the presentation layout
-
-2025-03-17-v7 - Adding plots for plenary presentation
-
-2025-03-17-v8 - Adding more plots for plenary presentation
 
 # Overall lan, fig
 
@@ -517,7 +486,7 @@ generate_presentation_plot(canum_3a, "mean_weight")
 
 ### Imputations, results
 
-```{r}
+```{r, eval = F}
 mis_1 <- subset(mis, catch_t > 0 & subFleet == "passive" & area %in% c("27.3.a.20", "27.3.a.21"))
 
 mis_1$comment <- as.factor(mis_1$comment)
@@ -605,7 +574,7 @@ Use Q4, 2023 on all Q4 landings in 2024
 
 ### Imputations, results
 
-```{r}
+```{r, eval = F}
 
 mis_1 <- subset(mis, catch_t > 0 & subFleet == "purse seine" & area %in% c("27.3.a.20", "27.3.a.21"))
 
@@ -687,7 +656,7 @@ generate_presentation_plot(canum_3a, "mean_weight")
 
 ### Imputations, results
 
-```{r}
+```{r, eval = F}
 
 mis_1 <- subset(mis, catch_t > 0 & subFleet == "trawl >= 32mm" & area %in% c("27.3.a.20", "27.3.a.21"))
 
@@ -768,7 +737,7 @@ generate_presentation_plot(canum_3a, "mean_weight")
 
 ### Imputations, results
 
-```{r}
+```{r, eval = F}
 mis_1 <- subset(mis, catch_t > 0 & subFleet == "trawl < 32mm" & area %in% c("27.3.a.20", "27.3.a.21"))
 
 mis_1$comment <- as.factor(mis_1$comment)
@@ -852,7 +821,7 @@ generate_presentation_plot(canum_3a, "mean_weight")
 
 ### Imputations, results
 
-```{r}
+```{r, eval = F}
 mis_1 <- subset(mis, catch_t > 0 & subFleet == "passive" & area %in% c("27.3.b.23", "27.3.c.22", "27.3.d.24"))
 
 mis_1$comment <- as.factor(mis_1$comment)
@@ -942,7 +911,7 @@ We need a better understanding of the fishery and possible samples from 27.3.d.2
 
 ### Imputations, results
 
-```{r}
+```{r, eval = F}
 mis_1 <- subset(mis, catch_t > 0 & subFleet == "active >= 32mm" & area %in% c("27.3.c.22", "27.3.d.24"))
 
 mis_1$comment <- as.factor(mis_1$comment)
@@ -1030,7 +999,7 @@ We need a better understanding of the fishery and possible samples from 27.3.d.2
 
 ### Imputations, results
 
-```{r}
+```{r, eval = F}
 mis_1 <- subset(mis, catch_t > 0 & subFleet == "active < 32mm" & area %in% c("27.3.b.23", "27.3.c.22", "27.3.d.24"))
 
 mis_1$comment <- as.factor(mis_1$comment)
@@ -1045,7 +1014,7 @@ class = 'cell-border stripe')
 # Split
 ## Row
 ### WBSS (ton)
-```{r}
+```{r, eval = F}
 wbss_ton <- summarise(group_by(subset(splitted, stock == "WBSS"), year, fleet), caton = sum(caton, na.rm = T))
 
 ggplot(wbss_ton, aes(
@@ -1062,7 +1031,7 @@ ggplot(wbss_ton, aes(
 ```
 
 ### WBSS (number)
-```{r}
+```{r, eval = F}
 wbss_no <- summarise(group_by(subset(splitted, stock == "WBSS"), year, fleet), number = sum(canum_1000/1000, na.rm = T))
 
 ggplot(wbss_no, aes(
@@ -1089,7 +1058,7 @@ knitr::kable(lan_sum_t)
 
 ## Row
 ### Catch per stock and fleet (ton)
-```{r}
+```{r, eval = F}
 
 lan_sum <- summarise(group_by(splitted, year, fleet, stock), caton = sum(caton, na.rm = T))
 
@@ -1128,24 +1097,24 @@ knitr::kable(split)
 
 ### Catch in numbers per age
 
-```{r}
+```{r, eval = F}
 knitr::include_graphics("plot_catch number by age-1.png")
 ```
 
 ### Catch in weight per age
 
-```{r}
+```{r, eval = F}
 knitr::include_graphics("plot_catch weigth by age-1.png")
 ```
 
 ## Row
 ### Mean weight at age in catch
-```{r}
+```{r, eval = F}
 knitr::include_graphics("plot_weigth at age catch-1.png")
 ```
 
 ### Mean weight at age in stock
-```{r}
+```{r, eval = F}
 knitr::include_graphics("plot_weigth at age stock-1.png")
 ```
 
