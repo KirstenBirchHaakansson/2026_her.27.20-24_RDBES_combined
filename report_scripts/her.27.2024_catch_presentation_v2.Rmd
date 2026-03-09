@@ -1,0 +1,1260 @@
+---
+title: "her.27.20-24 - catch data 2024"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: rows
+    vertical_layout: scroll
+    horisontal_layout: fill
+    theme: 
+      primary: "#990000"
+    source_code: embed
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(DT)
+library(dplyr)
+library(ggplot2)
+library(RColorBrewer)
+library(knitr)
+
+path_input <- "/data"
+year_0 <- 2025
+year_a <- year_0-1
+year_b <- year_0-2
+year_c <- year_0-3
+year_d <- year_0-4
+
+rects <- c("36G0", "36G1", "36G2", "36G3", "36G4", "37G0", "37G1", "37G2", "37G3", "37G4", "38F9", "38G0", "38G1", "38G2", "38G3", "38G4", "39F9", "39G0", "39G1", "39G2", "39G3", "39G4", "40F9", "40G0", "40G1", "40G2", "40G3", "41G0", "41G1", "41G2", "41G3", "42G0", "42G1", "42G2", "43F8", "43F9", "43G0", "43G1", "43G2", "44F7", "44F8", "44F9", "44G0", "44G1", "44G2", "45F7", "45F8", "45F9", "45G0", "45G1", "45G2", "46F8", "46F9", "46G0", "46G1", "46G2", "47F8", "47F9", "47G0", "47G1", "48F8", "48F9", "48G0", "48G1")
+```
+
+```{r fun}
+
+generate_presentation_plot <- function(data, plot_type) {
+  data$subFleet <- factor(data$subFleet)
+  data$area <- factor(data$area)
+  
+  if (plot_type == "landings") {
+    lan_fleet_plot <- summarise(group_by(data, ctry, quarter, subFleet, area, year), catch_ton = sum(catch_t, na.rm = TRUE) / 9)
+    
+    p <- ggplot(lan_fleet_plot, aes(x = year, y = catch_ton, fill = ctry)) +
+      geom_bar(stat = "identity") + 
+      facet_grid(quarter ~ area + subFleet, drop = FALSE) + 
+      scale_fill_manual(values = ddc.col, drop = FALSE) +
+      labs(title = paste0("Landings, ", lan_fleet_plot$year), y = "tons") +
+      theme(legend.position = "bottom", axis.text.x = element_text(angle = 90, vjust = 0.5))
+
+    print(p)
+    
+  } else {
+
+      if (plot_type == "relative age") {
+        canum_sum <- summarise(group_by(data, year, quarter, area, subFleet, ctry), canum_total = sum(canum_1000))
+        plot_dat <- mutate(left_join(data, canum_sum), canum_pct = canum_1000 / canum_total)
+        y_var <- "canum_pct"
+        y_label <- "relative number (%)"
+        title_prefix <- "Relative number at age"
+        
+      } else if (plot_type == "mean_weight") {
+        data$weca_g[data$weca_g == 0] <- NA
+        plot_dat <- data
+        y_var <- "weca_g"
+        y_label <- "mean weight (g)"
+        title_prefix <- "Mean weight at age"
+      }
+      
+      p <- ggplot(plot_dat, aes(x = wr, y = !!rlang::sym(y_var), group = ctry, col = ctry)) +
+        geom_point() +
+        geom_line() +
+        facet_grid(quarter ~ area + subFleet, drop = F) + 
+        scale_color_manual(values = ddc.col, drop=FALSE) +
+        theme(legend.position = "bottom") +
+        labs(title = paste0(title_prefix, ", ", unique(plot_dat$year)), y = y_label)
+      
+      print(p)
+    }
+  }
+
+```
+
+```{r get_data, include = F}
+# CANUM
+
+canum <-
+  readRDS(paste(
+    "../data/",
+    "C2_her2024_canum_without_imputations_2000_", year_0, ".rds",
+    sep = ""
+  ))
+
+canum_0 <- subset(canum, year == year_0)
+
+canum_a <- subset(canum, year == year_a)
+
+canum_b <- subset(canum, year == year_b)
+
+canum_c <- subset(canum, year == year_c)
+
+canum_d <- subset(canum, year == year_d)
+
+canum_3 <- bind_rows(canum_0, canum_a, canum_b, canum_c, canum_d)
+
+canum_3$ctry <- as.factor(canum_3$ctry)
+canum_3$area <- as.factor(canum_3$area)
+canum_3$fleet <- as.factor(canum_3$fleet)
+canum_3$quarter <- as.factor(canum_3$quarter)
+canum_3$subFleet <- as.factor(canum_3$subFleet)
+canum_3$year <- as.numeric(canum_3$year)
+
+# mis <- readRDS(paste(
+#     "../data/",
+#     "C5_her2024_canum_with_imputations_subfleets_", year_0, ".rds",
+#     sep = ""
+#   ))
+# 
+# mis <- distinct(mis, ctry, year, area, fleet, subFleet, quarter, catch_t, 
+#                 noSamples, noLength, noAge, comment, comment1) 
+# 
+# mis$ctry <- as.factor(mis$ctry)
+# mis$area <- as.factor(mis$area)
+# mis$fleet <- as.factor(mis$fleet)
+# mis$quarter <- as.factor(mis$quarter)
+# mis$subFleet <- as.factor(mis$subFleet)
+# mis$year <- as.numeric(mis$year)
+
+# splitted <- read.csv(paste(
+#     "../data/",
+#     "C7_wbss_multi_fleet_", year_0, ".csv",
+#     sep = ""
+#   ))
+# 
+# splitted_a <- read.csv(paste(
+#     "../boot/data/data_from_past_years/",
+#     "C7_wbss_multi_fleet_", year_a, ".csv",
+#     sep = ""
+#   ))
+# 
+# splitted_b <- read.csv(paste(
+#     "../boot/data/data_from_past_years/",
+#     "C7_wbss_multi_fleet_", year_b, ".csv",
+#     sep = ""
+#   ))
+# 
+# splitted_c <- read.csv(paste(
+#     "../boot/data/data_from_past_years/",
+#     "C7_wbss_multi_fleet_", year_c, "_12-4_diff_ages.csv",
+#     sep = ""
+#   ))
+# 
+# splitted_d <- read.csv(paste(
+#     "../boot/data/data_from_past_years/",
+#     "C7_wbss_multi_fleet_", year_d, ".csv",
+#     sep = ""
+#   ))
+# 
+# splitted_wbss <- rbind(splitted, splitted_a, splitted_b, splitted_c, splitted_d)
+# splitted_wbss$stock <- "WBSS" 
+# 
+# splitted_wbss <- rename(splitted_wbss, "canum_1000" = "wbss_canum_1000", "caton" = "wbss_caton")
+# 
+# splitted <- read.csv(paste(
+#     "../data/",
+#     "C7_nsas_input_fleet_", year_0, ".csv",
+#     sep = ""
+#   ))
+# 
+# splitted_a <- read.csv(paste(
+#     "../boot/data/data_from_past_years/",
+#     "C7_nsas_input_fleet_", year_a, ".csv",
+#     sep = ""
+#   ))
+# 
+# splitted_b <- read.csv(paste(
+#     "../boot/data/data_from_past_years/",
+#     "C7_nsas_input_fleet_", year_b, ".csv",
+#     sep = ""
+#   ))
+# 
+# splitted_c <- read.csv(paste(
+#     "../boot/data/data_from_past_years/",
+#     "C7_nsas_input_fleet_", year_c, "_12-4_diff_ages.csv",
+#     sep = ""
+#   ))
+# 
+# splitted_d <- read.csv(paste(
+#     "../boot/data/data_from_past_years/",
+#     "C7_nsas_input_fleet_", year_d, "_12-4.csv",
+#     sep = ""
+#   ))
+# 
+# splitted_d$quarter <- 1
+# 
+# splitted_nsas <- rbind(splitted, splitted_a, splitted_b, splitted_c, splitted_d)
+# splitted_nsas$stock <- "NSAS"
+# 
+# splitted_nsas <- rename(splitted_nsas, "canum_1000" = "nsas_canum_1000", "caton" = "nsas_caton")
+# 
+# splitted <- rbind(select(splitted_nsas, -quarter), splitted_wbss)
+```
+
+```{r set_col, include = F}
+
+canum_3$ctry <- as.factor(canum_3$ctry)
+
+ddc <- levels(as.factor(canum_3$ctry))
+ddc.col <- brewer.pal(length(ddc), "Dark2")
+names(ddc.col)  <- ddc
+
+```
+
+# Version `r paste0(lubridate::today(), "-v2")`
+
+## Row
+
+### Versions
+
+202-03-09-v1 - 1st version
+
+202-03-09-v1 - Updated with Norwegian purse seine biology from the transfer area. Updated plots
+
+# Overall lan, fig
+
+## Row
+
+### All the sub-fleets {.no-padding}
+
+```{r, fig.width = 30}
+lan_fleet_plot <- summarise(group_by(subset(canum_3, year == year_0), ctry, subFleet, area, year), catch_ton = sum(catch_t, na.rm = T)/9)
+
+
+ggplot(lan_fleet_plot, aes(x = as.character(year), y = catch_ton, fill = ctry)) +
+  geom_bar(stat = "identity", width = 1) +
+    theme(legend.position="bottom", axis.text.x = element_text(angle = 90, vjust = 0.5)) + 
+  scale_fill_manual(values = ddc.col, drop=FALSE) +
+  facet_wrap(~paste(area, subFleet, sep = " - "), nrow = 1) +
+  labs(title = paste0("Landings per subFleet and area, ", min(lan_fleet_plot$year), "-", max(lan_fleet_plot$year)),
+       x = "year")
+```
+
+## Row {data-height="500"}
+
+### Map sub-fleet to fleet {.no-padding}
+
+***Mapping to fleet***
+
+`canum$fleet[canum$area %in% c("27.3.a.20", "27.3.a.21") & canum$subFleet %in% c("passive", "purse seine", "trawl >= 32mm")] <- "C"`
+
+`canum$fleet[canum$area %in% c("27.3.a.20", "27.3.a.21") & canum$subFleet %in% c("trawl < 32mm")] <- "D"`
+
+`canum$fleet[canum$area %in% c("27.3.c.22", "27.3.b.23", "27.3.d.24")] <- "F"`
+
+### Landings per fleet {.no-padding}
+
+```{r, eval = T, fig.width = 7}
+lan_fleet_plot <- summarise(group_by(subset(canum_3, year %in% c(year_0, year_a)), ctry, fleet, area, year), catch_ton = sum(catch_t, na.rm = T)/9)
+
+ggplot(lan_fleet_plot, aes(x = as.character(year), y = catch_ton, fill = ctry)) +
+  geom_bar(stat = "identity") +
+    theme(legend.position="bottom", axis.text.x = element_text(angle = 90, vjust = 0.5)) + 
+  scale_fill_manual(values = ddc.col, drop=FALSE) +
+  facet_wrap(~paste(area, fleet, sep = " - "), nrow = 1) +
+  labs(title = paste0("Landings per fleet and area, ", min(lan_fleet_plot$year), "-", max(lan_fleet_plot$year)),
+       x = "year")
+```
+
+### Landings per fleet {.no-padding}
+
+```{r, eval = T, fig.width = 10}
+lan_fleet_plot <- summarise(group_by(canum_3, ctry, fleet, area, year), catch_ton = sum(catch_t, na.rm = T)/9)
+
+ggplot(lan_fleet_plot, aes(x = year, y = catch_ton, fill = ctry)) +
+  geom_bar(stat = "identity") +
+    theme(legend.position="bottom", axis.text.x = element_text(angle = 90, vjust = 0.5)) + 
+  scale_fill_manual(values = ddc.col, drop=FALSE) +
+  facet_wrap(~paste(area, fleet, sep = " - "), nrow = 1) +
+  labs(title = paste0("Landings per fleet and area, ", min(lan_fleet_plot$year), "-", max(lan_fleet_plot$year)))
+```
+
+# Overall lan, tab
+
+## Row
+
+### Total cacth (ton)
+
+```{r}
+lan_sum <- summarise(group_by(canum_3, year), catch_ton = sum(catch_t, na.rm = T)/9)
+lan_sum_t <- tidyr::spread(lan_sum, key = year, value = catch_ton, fill = 0)
+
+knitr::kable(lan_sum_t)
+```
+
+## Row
+
+### Catch per country (ton)
+
+```{r}
+lan_sum <- summarise(group_by(canum_3, year, ctry), catch_ton = sum(catch_t, na.rm = T)/9)
+
+lan_sum_t <- tidyr::spread(lan_sum, key = year, value = catch_ton, fill = 0)
+
+knitr::kable(lan_sum_t)
+```
+
+## Row
+
+### Catch per fleet (ton)
+
+```{r}
+lan_sum <- summarise(group_by(canum_3, year, fleet), catch_ton = sum(catch_t, na.rm = T)/9)
+
+lan_sum_t <- tidyr::spread(lan_sum, key = year, value = catch_ton, fill = 0)
+
+knitr::kable(lan_sum_t)
+```
+
+## Row
+
+### Catch per quarter (ton)
+
+```{r}
+lan_sum <- summarise(group_by(canum_3, year, quarter), catch_ton = sum(catch_t, na.rm = T)/9)
+
+lan_sum_t <- tidyr::spread(lan_sum, key = year, value = catch_ton, fill = 0)
+
+knitr::kable(lan_sum_t)
+```
+
+## Row
+
+### Catch per country and area (ton)
+
+```{r}
+lan_sum <- summarise(group_by(canum_3, year, ctry, area), catch_ton = sum(catch_t, na.rm = T)/9)
+
+lan_sum_t <- tidyr::spread(lan_sum, key = year, value = catch_ton, fill = 0)
+
+knitr::kable(lan_sum_t)
+```
+
+## Row
+
+### Catch per area and fleet (ton)
+
+```{r}
+lan_sum <- summarise(group_by(canum_3, year, area, fleet), catch_ton = sum(catch_t, na.rm = T)/9)
+
+lan_sum_t <- tidyr::spread(lan_sum, key = year, value = catch_ton, fill = 0)
+
+knitr::kable(lan_sum_t)
+```
+
+## Row
+
+### Catch per area and quarter (ton)
+
+```{r}
+lan_sum <- summarise(group_by(canum_3, year, area, quarter), catch_ton = sum(catch_t, na.rm = T)/9)
+
+lan_sum_t <- tidyr::spread(lan_sum, key = year, value = catch_ton, fill = 0)
+
+knitr::kable(lan_sum_t)
+```
+
+## Row
+
+### Catch per country, area, fleet, quarter (ton)
+
+```{r}
+lan_sum <- summarise(group_by(canum_3, ctry, year, area, fleet, quarter), catch_ton = round(sum(catch_t, na.rm = T)/9, digits = 4))
+
+lan_sum_t <- tidyr::spread(lan_sum, key = year, value = catch_ton, fill = 0)
+
+datatable(lan_sum_t, filter = 'top', options = list(
+  pageLength = 20, autoWidth = F, scrollY = F
+  
+),
+class = 'cell-border stripe') %>%
+  formatRound(columns = c(5:9), digits = 3)
+```
+
+## Row
+
+### Catch per country, area, subFleet, quarter (ton)
+
+```{r}
+lan_sum <- summarise(group_by(canum_3, ctry, year, area, subFleet, quarter), catch_ton = round(sum(catch_t, na.rm = T)/9, digits = 4))
+
+lan_sum_t <- tidyr::spread(lan_sum, key = year, value = catch_ton, fill = 0)
+
+datatable(lan_sum_t, filter = 'top', options = list(
+  pageLength = 20, autoWidth = F, scrollY = F
+  
+),
+class = 'cell-border stripe') %>%
+  formatRound(columns = c(5:9), digits = 3)
+```
+
+# Overall lan & samp
+
+## Row
+
+### Summary
+
+We have a lot of unsampled strata and strata with very few samples, e.g., in 27.3.a.20 we started with one sample (the 1 Norwegian samples from the ps are from the transfer area)
+
+So a lot of borrowing ..... samples from the tranfer area and 2023
+
+## Row
+
+### landings and sampling 27.3.a {.no-padding}
+
+```{r, echo = F}
+
+lan_samp <- distinct(subset(canum_3, year == year_0 & area %in% c("27.3.a.20", "27.3.a.21") & catch_t > 0), year, catch_t, subFleet, area, ctry, quarter, noSample)
+
+ggplot(lan_samp, aes(x = noSample, y = catch_t, col = ctry)) +
+  geom_point(size = 3) + 
+  geom_vline(xintercept = 3) +
+  facet_grid(area~subFleet) +
+  scale_color_manual(values = ddc.col) +
+  labs(title = paste0("Her.27.20-27. Landed tons per number of samples, ", year_0), x = "Number of sample", y = "Tons") + 
+  theme(legend.position="bottom")
+
+```
+
+### landings and sampling 27.3.b, 27.3.c, 27.3.d.24 {.no-padding}
+
+```{r, echo = F}
+
+lan_samp <- distinct(subset(canum_3, year == year_0 & area %in% c("27.3.b.23", "27.3.c.22", "27.3.d.24") & catch_t > 0), year, catch_t, subFleet, area, ctry, quarter, noSample)
+
+ggplot(lan_samp, aes(x = noSample, y = catch_t, col = ctry)) +
+  geom_point(size = 3) + 
+  geom_vline(xintercept = 3) +
+  facet_grid(area~subFleet) +
+  scale_color_manual(values = ddc.col) +
+  labs(title = paste0("Her.27.20-27. Landed tons per number of samples, ", year_0), x = "Number of sample", y = "Tons") + 
+  theme(legend.position="bottom")
+
+```
+
+## Row
+
+### Tabulated landings and sampling, tabulated
+
+```{r}
+samp_all <- distinct(subset(canum_3, catch_t > 0 & year == year_0), ctry, year, quarter, area, subFleet, catch_t, noSample, noLength, noAge)
+
+datatable(samp_all, filter = 'top', options = list(
+  pageLength = nrow(samp_all), autoWidth = F, scrollY = F
+),
+class = 'cell-border stripe') %>%
+  formatRound(columns = c(6), digits = 3)
+```
+
+# Lan & samp, 27.3.a, p
+
+## Row {data-height="500"}
+
+### Landings
+
+```{r}
+
+canum_3a <- subset(canum_3, subFleet == "passive" & area %in% c("27.3.a.20", "27.3.a.21") & year == year_0)
+
+generate_presentation_plot(canum_3a, "landings")
+
+```
+
+### Landings, tabulated
+
+```{r}
+canum_3a <- subset(subset(canum_3, catch_t > 0), subFleet == "passive" & area %in% c("27.3.a.20", "27.3.a.21") & year == year_0)
+
+tab <- summarise(group_by(canum_3a, ctry, quarter, subFleet, area, year), catch_ton = sum(catch_t, na.rm = TRUE) / 9)
+
+knitr::kable(tab)
+    
+```
+
+### Samples, `r paste0(year_a, " - ", year_0)`
+
+```{r}
+samp <- subset(canum_3, noSample > 0 & subFleet %in% c("passive") & area %in% c("27.3.a.20", "27.3.a.21", "27.3.b.23") & year %in% c(year_0, year_a))
+
+samp_1 <- distinct(samp, ctry, year, quarter, area, subFleet, noSample, noLength, noAge)
+
+knitr::kable(samp_1)
+```
+
+## Row {data-height="500"}
+
+### CANUM, relative, `r year_0`
+
+```{r}
+canum_3a <- subset(canum_3, subFleet == "passive" & area %in% c("27.3.a.20", "27.3.a.21", "27.3.b.23") & year == year_0)
+
+generate_presentation_plot(canum_3a, "relative age")
+```
+
+### Mean weight at age, `r year_0`
+
+```{r}
+canum_3a <- subset(canum_3, subFleet == "passive" & area %in% c("27.3.a.20", "27.3.a.21", "27.3.b.23") & year == year_0)
+
+generate_presentation_plot(canum_3a, "mean_weight")
+```
+
+## Row {data-height="500"}
+
+### CANUM, relative, `r year_a`
+
+```{r}
+canum_3a <- subset(canum_3, subFleet %in% c("passive") & area %in% c("27.3.a.20", "27.3.a.21", "27.3.b.23") & year == year_a)
+
+generate_presentation_plot(canum_3a, "relative age")
+```
+
+### Mean weight at age, `r year_a`
+
+```{r}
+canum_3a <- subset(canum_3, subFleet %in% c("passive") & area %in% c("27.3.a.20", "27.3.a.21", "27.3.b.23") & year == year_a)
+
+generate_presentation_plot(canum_3a, "mean_weight")
+```
+
+## Row
+
+### Knowlegde & imputations
+
+**Sweden how should I borrow?** Swedish samples from Q4, 27.3.a.21 are used on all landings in 27.3.a
+
+## Row
+
+### Imputations, results
+
+```{r, eval = F}
+mis_1 <- subset(mis, catch_t > 0 & subFleet == "passive" & area %in% c("27.3.a.20", "27.3.a.21"))
+
+mis_1$comment <- as.factor(mis_1$comment)
+mis_1$comment1 <- as.factor(mis_1$comment1)
+
+datatable(mis_1, filter = 'top', options = list(
+  pageLength = nrow(mis_1), autoWidth = F, scrollY = F
+),
+class = 'cell-border stripe')
+```
+
+# Lan & samp, 27.3.a, ps
+
+## Row {data-height="500"}
+
+### Landings
+
+```{r}
+
+canum_3a <- subset(canum_3, subFleet == "purse seine" & area %in% c("27.3.a.20", "27.3.a.21") & year == year_0)
+
+generate_presentation_plot(canum_3a, "landings")
+
+```
+
+### CANUM, relative, `r year_0`
+
+```{r}
+canum_3a <- subset(canum_3, subFleet == "purse seine" & area %in% c("27.3.a.20", "27.3.a.21") & year == year_0)
+
+generate_presentation_plot(canum_3a, "relative age")
+```
+
+### Mean weight at age, `r year_0`
+
+```{r}
+canum_3a <- subset(canum_3, subFleet == "purse seine" & area %in% c("27.3.a.20", "27.3.a.21") & year == year_0)
+
+generate_presentation_plot(canum_3a, "mean_weight")
+```
+
+## Row {data-height="500"}
+
+### Samples, `r paste0(year_a, " - ", year_0)`
+
+```{r}
+samp <- subset(canum_3, noSample > 0 & subFleet %in% c("purse seine") & area %in% c("27.3.a.20", "27.3.a.21") & year %in% c(year_0, year_a))
+
+samp_1 <- distinct(samp, ctry, year, quarter, area, subFleet, noSample, noLength, noAge)
+
+knitr::kable(samp_1)
+```
+
+### CANUM, relative, `r year_a`
+
+```{r}
+canum_3a <- subset(canum_3, subFleet %in% c("purse seine") & area %in% c("27.3.a.20", "27.3.a.21") & year == year_a)
+
+generate_presentation_plot(canum_3a, "relative age")
+```
+
+### Mean weight at age, `r year_a`
+
+```{r}
+canum_3a <- subset(canum_3, subFleet %in% c("purse seine") & area %in% c("27.3.a.20", "27.3.a.21") & year == year_a)
+
+generate_presentation_plot(canum_3a, "mean_weight")
+```
+
+## Row
+
+### Knowlegde & imputations
+
+Swedish comment: The samples reported under in SD 20 PS Q3 come from beach seiners (SB). The samples were composed of very small fish and are representative of the PS fleet in Q2 and Q4 when these beach seiners operate and purse-seiners dont. But should not be used in SD 20 PS Q4. The value in that quarter (much more significant) comes in the vast majority from catches of actual purse-seiners, which size distribution is much different (larger) from that of beach seiners. To input on those, it will be better to borrow samples and estimates from real purse-seine samples reported for 2023.
+
+Sweden advise that we use Q4 from 2023 on Q4
+
+Use Q1, 2023 on all Q1 and Q2 landings in 2024
+
+Only use Q3 Swedish samples on Q3 Swedish landings. The Norwegian landings in 27.3.a.20 is taken very close to the transfer area and therefore it is reasonable to use samples from the transfer area on the Norwegian landings in Q3. Norway will re-submit yellow sheets with biology
+
+Use Q4, 2023 on all Q4 landings in 2024
+
+## Row
+
+### Imputations, results
+
+```{r, eval = F}
+
+mis_1 <- subset(mis, catch_t > 0 & subFleet == "purse seine" & area %in% c("27.3.a.20", "27.3.a.21"))
+
+mis_1$comment <- as.factor(mis_1$comment)
+mis_1$comment1 <- as.factor(mis_1$comment1)
+
+datatable(mis_1, filter = 'top', options = list(
+  pageLength = 25, autoWidth = F, scrollY = F
+),
+class = 'cell-border stripe')
+
+```
+
+# Lan & samp, 27.3.a, t\>32
+
+## Row {data-height="500"}
+
+### Landings
+
+```{r}
+
+canum_3a <- subset(canum_3, subFleet == "trawl >= 32mm" & area %in% c("27.3.a.20", "27.3.a.21") & year == year_0)
+
+generate_presentation_plot(canum_3a, "landings")
+
+```
+
+### CANUM, relative, `r year_0`
+
+```{r}
+canum_3a <- subset(canum_3, subFleet == "trawl >= 32mm" & area %in% c("27.3.a.20", "27.3.a.21") & year == year_0)
+
+generate_presentation_plot(canum_3a, "relative age")
+```
+
+### Mean weight at age, `r year_0`
+
+```{r}
+canum_3a <- subset(canum_3, subFleet == "trawl >= 32mm" & area %in% c("27.3.a.20", "27.3.a.21") & year == year_0)
+
+generate_presentation_plot(canum_3a, "mean_weight")
+```
+
+## Row {data-height="500"}
+
+### Samples, `r paste0(year_a, " - ", year_0)`
+
+```{r}
+samp <- subset(canum_3, noSample > 0 & subFleet %in% c("trawl >= 32mm") & area %in% c("27.3.a.20", "27.3.a.21") & year %in% c(year_0, year_a))
+
+samp_1 <- distinct(samp, ctry, year, quarter, area, subFleet, noSample, noLength, noAge)
+
+knitr::kable(samp_1)
+```
+
+### CANUM, relative, `r year_a` {.tabset}
+
+```{r}
+canum_3a <- subset(canum_3, subFleet %in% c("trawl >= 32mm") & area %in% c("27.3.a.20", "27.3.a.21") & year == year_a)
+
+generate_presentation_plot(canum_3a, "relative age")
+```
+
+### Mean weight at age, `r year_a` {.tabset}
+
+```{r}
+canum_3a <- subset(canum_3, subFleet %in% c("trawl >= 32mm") & area %in% c("27.3.a.20", "27.3.a.21") & year == year_a)
+
+generate_presentation_plot(canum_3a, "mean_weight")
+```
+
+## Row
+
+### Knowlegde & imputations
+
+**OK to borrow from 2023?** Yes!
+
+## Row
+
+### Imputations, results
+
+```{r, eval = F}
+
+mis_1 <- subset(mis, catch_t > 0 & subFleet == "trawl >= 32mm" & area %in% c("27.3.a.20", "27.3.a.21"))
+
+mis_1$comment <- as.factor(mis_1$comment)
+mis_1$comment1 <- as.factor(mis_1$comment1)
+
+datatable(mis_1, filter = 'top', options = list(
+  pageLength = 25, autoWidth = F, scrollY = F
+),
+class = 'cell-border stripe')
+```
+
+# Lan & samp, 27.3.a, t\<32
+
+## Row {data-height="500"}
+
+### Landings
+
+```{r}
+
+canum_3a <- subset(canum_3, subFleet == "trawl < 32mm" & area %in% c("27.3.a.20", "27.3.a.21") & year == year_0)
+
+generate_presentation_plot(canum_3a, "landings")
+
+```
+
+### CANUM, relative, `r year_0`
+
+```{r}
+canum_3a <- subset(canum_3, subFleet == "trawl < 32mm" & area %in% c("27.3.a.20", "27.3.a.21") & year == year_0)
+
+generate_presentation_plot(canum_3a, "relative age")
+```
+
+### Mean weight at age, `r year_0`
+
+```{r}
+canum_3a <- subset(canum_3, subFleet == "trawl < 32mm" & area %in% c("27.3.a.20", "27.3.a.21") & year == year_0)
+
+generate_presentation_plot(canum_3a, "mean_weight")
+```
+
+## Row {data-height="500"}
+
+### Samples, `r paste0(year_a, " - ", year_0)`
+
+```{r}
+samp <- subset(canum_3, noSample > 0 & subFleet %in% c("trawl < 32mm") & area %in% c("27.3.a.20", "27.3.a.21") & year %in% c(year_0, year_a))
+
+samp_1 <- distinct(samp, ctry, year, quarter, area, subFleet, noSample, noLength, noAge)
+
+knitr::kable(samp_1)
+```
+
+### CANUM, relative, `r year_a` {.tabset}
+
+```{r}
+canum_3a <- subset(canum_3, subFleet %in% c("trawl < 32mm") & area %in% c("27.3.a.20", "27.3.a.21") & year == year_a)
+
+generate_presentation_plot(canum_3a, "relative age")
+```
+
+### Mean weight at age, `r year_a` {.tabset}
+
+```{r}
+canum_3a <- subset(canum_3, subFleet %in% c("trawl < 32mm") & area %in% c("27.3.a.20", "27.3.a.21") & year == year_a)
+
+generate_presentation_plot(canum_3a, "mean_weight")
+```
+
+## Row
+
+### Knowlegde & imputations
+
+**Q2 goes to Q1, Q4 goes to Q3?** - Yes!
+
+## Row
+
+### Imputations, results
+
+```{r, eval = F}
+mis_1 <- subset(mis, catch_t > 0 & subFleet == "trawl < 32mm" & area %in% c("27.3.a.20", "27.3.a.21"))
+
+mis_1$comment <- as.factor(mis_1$comment)
+mis_1$comment1 <- as.factor(mis_1$comment1)
+
+datatable(mis_1, filter = 'top', options = list(
+  pageLength = 25, autoWidth = F, scrollY = F
+),
+class = 'cell-border stripe')
+```
+
+# Lan & samp, 27.3.bcd, p
+
+## Row {data-height="500"}
+
+### Landings, `r year_0`
+
+```{r}
+
+canum_3a <- subset(canum_3, subFleet == "passive" & area %in% c("27.3.b.23", "27.3.c.22", "27.3.d.24") & year == year_0)
+
+generate_presentation_plot(canum_3a, "landings")
+
+```
+
+### landings and samples `r year_0`
+
+```{r, echo = F}
+
+lan_samp <- distinct(
+  subset(
+    canum_3,
+    year == year_0 &
+      subFleet == "passive" &
+      area %in% c("27.3.b.23", "27.3.c.22", "27.3.d.24") &
+      catch_t > 0
+  ),
+  year,
+  catch_t,
+  subFleet,
+  area,
+  ctry,
+  quarter,
+  noSample
+)
+
+ggplot(lan_samp, aes(x = noSample, y = catch_t, col = ctry)) +
+  geom_point(size = 3) +
+  geom_vline(xintercept = 3) +
+  facet_grid(quarter ~ area) +
+  scale_color_manual(values = ddc.col) +
+  labs(
+    title = paste0("Landed tons per number of samples, ", year_0),
+    x = "Number of sample",
+    y = "Tons"
+  ) +
+  theme(legend.position = "bottom")
+
+```
+
+## Row
+
+### Landings and samples, `r year_0`
+
+```{r}
+canum_3a <- subset(
+  subset(canum_3, catch_t > 0),
+  subFleet == "passive" &
+    area %in% c("27.3.b.23", "27.3.c.22", "27.3.d.24") &
+    year == year_0
+)
+
+canum_3a_1 <- distinct(canum_3a,
+                       ctry,
+                       year,
+                       quarter,
+                       area,
+                       subFleet,
+                       noSample,
+                       noLength,
+                       noAge,
+                       catch_t)
+
+tab <- summarise(
+  group_by(canum_3a_1, ctry, quarter, subFleet, area, year),
+  catch_ton = sum(catch_t, na.rm = TRUE),
+  noSample = sum(noSample),
+  noLength = sum(noLength),
+  noAge = sum(noAge)
+)
+
+datatable(
+  tab,
+  filter = 'top',
+  options = list(
+    pageLength = 10,
+    autoWidth = F,
+    scrollY = F
+    
+  ),
+  class = 'cell-border stripe'
+) %>%
+  formatRound(columns = c(6), digits = 3)
+    
+```
+
+## Row
+
+### Availaible samples, `r year_d` -`r year_0`
+
+## Row
+
+### CANUM, relative, `r year_0`
+
+```{r}
+canum_3a <- subset(canum_3, subFleet == "passive" & area %in% c("27.3.b.23", "27.3.c.22", "27.3.d.24") & year == year_0)
+
+generate_presentation_plot(canum_3a, "relative age")
+```
+
+### Mean weight at age, `r year_0`
+
+```{r}
+canum_3a <- subset(canum_3, subFleet == "passive" & area %in% c("27.3.b.23", "27.3.c.22", "27.3.d.24") & year == year_0)
+
+generate_presentation_plot(canum_3a, "mean_weight")
+```
+
+### CANUM, relative, `r year_0`
+
+```{r}
+canum_3a <- subset(canum_3, subFleet == "passive" & area %in% c("27.3.b.23", "27.3.c.22", "27.3.d.24") & year == year_0)
+
+generate_presentation_plot(canum_3a, "relative age")
+```
+
+### Mean weight at age, `r year_0`
+
+```{r}
+canum_3a <- subset(canum_3, subFleet == "passive" & area %in% c("27.3.b.23", "27.3.c.22", "27.3.d.24") & year == year_0)
+
+generate_presentation_plot(canum_3a, "mean_weight")
+```
+
+## Row
+
+### CANUM, relative, `r year_a` {.tabset}
+
+```{r}
+canum_3a <- subset(canum_3, subFleet == "passive" & area %in% c("27.3.b.23", "27.3.c.22", "27.3.d.24") & year == year_a)
+
+generate_presentation_plot(canum_3a, "relative age")
+```
+
+### Mean weight at age, `r year_a` {.tabset}
+
+```{r}
+canum_3a <- subset(canum_3, subFleet == "passive" & area %in% c("27.3.b.23", "27.3.c.22", "27.3.d.24") & year == year_a)
+
+generate_presentation_plot(canum_3a, "mean_weight")
+```
+
+## Row
+
+### Imputations, results
+
+```{r, eval = F}
+mis_1 <- subset(mis, catch_t > 0 & subFleet == "passive" & area %in% c("27.3.b.23", "27.3.c.22", "27.3.d.24"))
+
+mis_1$comment <- as.factor(mis_1$comment)
+mis_1$comment1 <- as.factor(mis_1$comment1)
+
+datatable(mis_1, filter = 'top', options = list(
+  pageLength = 25, autoWidth = F, scrollY = F
+),
+class = 'cell-border stripe')
+```
+
+# Lan & samp, 27.3.bcd, a\>32
+
+## Row {data-height="500"}
+
+### Landings
+
+```{r}
+
+canum_3a <- subset(canum_3, subFleet == "active >= 32mm" & area %in% c("27.3.c.22", "27.3.d.24") & year == year_0)
+
+generate_presentation_plot(canum_3a, "landings")
+
+```
+
+### CANUM, relative, `r year_0`
+
+```{r}
+canum_3a <- subset(canum_3, subFleet %in% c("active >= 32mm", "active < 32mm") & area %in% c("27.3.c.22", "27.3.d.24") & year == year_0)
+
+generate_presentation_plot(canum_3a, "relative age")
+```
+
+### Mean weight at age, `r year_0`
+
+```{r}
+canum_3a <- subset(canum_3, subFleet %in% c("active >= 32mm", "active < 32mm") & area %in% c("27.3.c.22", "27.3.d.24") & year == year_0)
+
+generate_presentation_plot(canum_3a, "mean_weight")
+```
+
+## Row {data-height="500"}
+
+### Samples, `r paste0(year_a, " - ", year_0)`
+
+```{r}
+samp <- subset(canum_3, noSample > 0 & subFleet %in% c("active >= 32mm", "active < 32mm") & area %in% c("27.3.c.22", "27.3.d.24") & year %in% c(year_0, year_a))
+
+samp_1 <- distinct(samp, ctry, year, quarter, area, subFleet, noSample, noLength, noAge)
+
+knitr::kable(samp_1)
+```
+
+### CANUM, relative, `r year_a` {.tabset}
+
+```{r}
+canum_3a <- subset(canum_3, subFleet %in% c("active >= 32mm", "active < 32mm") & area %in% c("27.3.c.22", "27.3.d.24") & year == year_a)
+
+generate_presentation_plot(canum_3a, "relative age")
+```
+
+### Mean weight at age, `r year_a` {.tabset}
+
+```{r}
+canum_3a <- subset(canum_3, subFleet %in% c("active >= 32mm", "active < 32mm") & area %in% c("27.3.c.22", "27.3.d.24") & year == year_a)
+
+generate_presentation_plot(canum_3a, "mean_weight")
+```
+
+## Row
+
+### Knowlegde & imputations
+
+2024: A sample from the Polish sprat fishery. Use on all?
+
+2023: A sample from the Polish sprat fishery. We used that one on all active in area 27.3.d.24
+
+Conclusion: We use Q4, 2024 on Q4. Q3, 2023 on all other Q's.
+
+The age distributions in the F fleet in the past seems to change a lot over the years, but the fleets has also changed a lot, from a single F fleet to more disaggregated fleets, this makes it difficult to impute over years
+
+We need a better understanding of the fishery and possible samples from 27.3.d.25 when it come to Polish data. Hopefully the RDBES data will give some insight into fleets, samples and future imputations. Together with raw RDBES data it may be beneficial to re-submit yellow sheets / IC for the last couple of years for the benchmark, so we can make more informed decisions.
+
+**After the Polish update** - the landings in this fleet nearly disappeared
+
+## Row
+
+### Imputations, results
+
+```{r, eval = F}
+mis_1 <- subset(mis, catch_t > 0 & subFleet == "active >= 32mm" & area %in% c("27.3.c.22", "27.3.d.24"))
+
+mis_1$comment <- as.factor(mis_1$comment)
+mis_1$comment1 <- as.factor(mis_1$comment1)
+
+datatable(mis_1, filter = 'top', options = list(
+  pageLength = 25, autoWidth = F
+),
+class = 'cell-border stripe')
+```
+
+# Lan & samp, 27.3.bcd, a\<32
+
+## Row {data-height="500"}
+
+### Landings
+
+```{r}
+
+canum_3a <- subset(canum_3, subFleet == "active < 32mm" & area %in% c("27.3.c.22", "27.3.d.24") & year == year_0)
+
+generate_presentation_plot(canum_3a, "landings")
+
+```
+
+### CANUM, relative, `r year_0`
+
+```{r}
+canum_3a <- subset(canum_3, subFleet %in% c("active < 32mm") & area %in% c("27.3.b.23", "27.3.c.22", "27.3.d.24") & year == year_0)
+
+generate_presentation_plot(canum_3a, "relative age")
+```
+
+### Mean weight at age, `r year_0`
+
+```{r}
+canum_3a <- subset(canum_3, subFleet %in% c("active < 32mm") & area %in% c("27.3.b.23", "27.3.c.22", "27.3.d.24") & year == year_0)
+
+generate_presentation_plot(canum_3a, "mean_weight")
+```
+
+## Row {data-height="500"}
+
+### Samples, `r paste0(year_a, " - ", year_0)`
+
+```{r}
+samp <- subset(canum_3, noSample > 0 & subFleet %in% c("active < 32mm") & area %in% c("27.3.b.23", "27.3.c.22", "27.3.d.24") & year %in% c(year_0, year_a))
+
+samp_1 <- distinct(samp, ctry, year, quarter, area, subFleet, noSample, noLength, noAge)
+
+knitr::kable(samp_1)
+```
+
+### CANUM, relative, `r year_a` {.tabset}
+
+```{r}
+canum_3a <- subset(canum_3, subFleet %in% c("active < 32mm") & area %in% c("27.3.b.23", "27.3.c.22", "27.3.d.24") & year == year_a)
+
+generate_presentation_plot(canum_3a, "relative age")
+```
+
+### Mean weight at age, `r year_a` {.tabset}
+
+```{r}
+canum_3a <- subset(canum_3, subFleet %in% c("active < 32mm") & area %in% c("27.3.b.23", "27.3.c.22", "27.3.d.24") & year == year_a)
+
+generate_presentation_plot(canum_3a, "mean_weight")
+```
+
+## Row
+
+### Knowlegde & imputations
+
+2024: A sample from the Polish sprat fishery. Use on all?
+
+2023: A sample from the Polish sprat fishery. We used that one on all active in area 27.3.d.24
+
+Conclusion: We use Q4, 2024 on Q4. Q3, 2023 on all other Q's.
+
+The age distributions in the F fleet in the past seems to change a lot over the years, but the fleets has also changed a lot, from a single F fleet to more disaggregated fleets, this makes it difficult to impute over years
+
+We need a better understanding of the fishery and possible samples from 27.3.d.25 when it come to Polish data. Hopefully the RDBES data will give some insight into fleets, samples and future imputations. Together with raw RDBES data it may be beneficial to re-submit yellow sheets / IC for the last couple of years for the benchmark, so we can make more informed decisions.
+
+## Row
+
+### Imputations, results
+
+```{r, eval = F}
+mis_1 <- subset(mis, catch_t > 0 & subFleet == "active < 32mm" & area %in% c("27.3.b.23", "27.3.c.22", "27.3.d.24"))
+
+mis_1$comment <- as.factor(mis_1$comment)
+mis_1$comment1 <- as.factor(mis_1$comment1)
+
+datatable(mis_1, filter = 'top', options = list(
+  pageLength = 25, autoWidth = F, scrollY = F
+),
+class = 'cell-border stripe')
+```
+
+# Split
+
+## Row
+
+### WBSS (ton)
+
+```{r, eval = F}
+wbss_ton <- summarise(group_by(subset(splitted, stock == "WBSS"), year, fleet), caton = sum(caton, na.rm = T))
+
+ggplot(wbss_ton, aes(
+  x = year,
+  y = caton,
+  fill = fleet
+)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  scale_fill_manual(values = brewer.pal(5, "Dark2")[c(1:2, 4:5)], drop = FALSE) +
+  labs(title = "Landings of WBSS (tons) per year and fleet") +
+  theme(legend.position = "bottom",
+        axis.text.x = element_text(angle = 90, vjust = 0.5))
+
+```
+
+### WBSS (number)
+
+```{r, eval = F}
+wbss_no <- summarise(group_by(subset(splitted, stock == "WBSS"), year, fleet), number = sum(canum_1000/1000, na.rm = T))
+
+ggplot(wbss_no, aes(
+  x = year,
+  y = number,
+  fill = fleet
+)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  scale_fill_manual(values = brewer.pal(4, "Dark2"), drop = FALSE) +
+  labs(title = "Landings of WBSS (number, mill.) per year and fleet") +
+  theme(legend.position = "bottom",
+        axis.text.x = element_text(angle = 90, vjust = 0.5))
+```
+
+## Row
+
+### Catch per fleet (ton)
+
+```{r}
+lan_sum <- summarise(group_by(canum_3, year, fleet), catch_ton = sum(catch_t, na.rm = T)/9)
+
+lan_sum_t <- tidyr::spread(lan_sum, key = year, value = catch_ton, fill = 0)
+
+knitr::kable(lan_sum_t)
+```
+
+## Row
+
+### Catch per stock and fleet (ton)
+
+```{r, eval = F}
+
+lan_sum <- summarise(group_by(splitted, year, fleet, stock), caton = sum(caton, na.rm = T))
+
+lan_sum_t <- tidyr::spread(lan_sum, key = year, value = caton, fill = 0)
+
+knitr::kable(lan_sum_t)
+```
+
+<!-- ## Row -->
+
+<!-- ### Split proportions from Florian -->
+
+```{r, eval = F}
+split <-
+  read.table(
+    paste(
+      "../boot/data/split_data/",
+      "cmoe_split_",
+      year_0,
+      "_SD20SD21_v2.csv",
+      sep = ""
+    ),
+    sep = ",",
+    header = T
+  )
+
+split <- select(split, year, area, quarter, wr, nsas, wbss, n)
+split$area <- ifelse(split$area == "20", "27.3.a.20", "27.3.a.21")
+
+knitr::kable(split)
+```
+
+# Numbers and weights
+
+## Row {data-height="700"}
+
+### Catch in numbers per age
+
+```{r, eval = F}
+knitr::include_graphics("plot_catch number by age-1.png")
+```
+
+### Catch in weight per age
+
+```{r, eval = F}
+knitr::include_graphics("plot_catch weigth by age-1.png")
+```
+
+## Row
+
+### Mean weight at age in catch
+
+```{r, eval = F}
+knitr::include_graphics("plot_weigth at age catch-1.png")
+```
+
+### Mean weight at age in stock
+
+```{r, eval = F}
+knitr::include_graphics("plot_weigth at age stock-1.png")
+```
