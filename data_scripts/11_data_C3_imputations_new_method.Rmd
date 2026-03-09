@@ -29,7 +29,7 @@ path_data <- "../data/"
 
 ```{r}
 
-dat <-  readRDS(paste0("./data/C2_her2024_canum_without_imputations_2000_2025.rds"))
+dat <-  readRDS(paste0("../data/C2_her2024_canum_without_imputations_2000_2025.rds"))
 
 unique(dat$year)
 
@@ -243,7 +243,7 @@ dat_without_bio$level_6 <- paste(
   sep = " - "
 )
 
-no_years <- years_time_series - 1
+no_years <- length(years_time_series) - 1
 max_year <- max(dat_with_bio$year)
 
 for (y in c(1:no_years)) {
@@ -293,7 +293,7 @@ level_now <- as.numeric(stringr::str_extract(names(dat_without_bio)[ncol(dat_wit
 # Define levels
 ## Level 295 - this depends on level_now above, so level_now + 1
 
-dat_with_bio$level_295 <- paste(
+dat_with_bio$level_157 <- paste(
   dat_with_bio$year,
   dat_with_bio$quarter,
   dat_with_bio$area,
@@ -302,7 +302,7 @@ dat_with_bio$level_295 <- paste(
   sep = " - "
 )
 
-dat_without_bio$level_295 <- paste(
+dat_without_bio$level_157 <- paste(
   dat_without_bio$year,
   dat_without_bio$quarter,
   dat_without_bio$area,
@@ -313,7 +313,7 @@ dat_without_bio$level_295 <- paste(
 
 # Level 296
 
-dat_with_bio$level_296 <- paste(
+dat_with_bio$level_158 <- paste(
   dat_with_bio$year,
   dat_with_bio$quarter,
   dat_with_bio$area,
@@ -322,7 +322,7 @@ dat_with_bio$level_296 <- paste(
   sep = " - "
 )
 
-dat_without_bio$level_296 <- paste(
+dat_without_bio$level_158 <- paste(
   dat_without_bio$year_impu_v1,
   dat_without_bio$quarter_impu_v1,
   dat_without_bio$area,
@@ -333,7 +333,7 @@ dat_without_bio$level_296 <- paste(
 
 # Level 297
 
-dat_with_bio$level_297 <- paste(
+dat_with_bio$level_159 <- paste(
   dat_with_bio$year,
   dat_with_bio$quarter,
   dat_with_bio$area,
@@ -342,7 +342,7 @@ dat_with_bio$level_297 <- paste(
   sep = " - "
 )
 
-dat_without_bio$level_297 <- paste(
+dat_without_bio$level_159 <- paste(
   dat_without_bio$year,
   dat_without_bio$quarter_impu_v2,
   dat_without_bio$area,
@@ -353,7 +353,7 @@ dat_without_bio$level_297 <- paste(
 
 # level 298
 
-dat_with_bio$level_298 <- paste(
+dat_with_bio$level_160 <- paste(
   dat_with_bio$year,
   dat_with_bio$quarter,
   dat_with_bio$area_impu,
@@ -362,7 +362,7 @@ dat_with_bio$level_298 <- paste(
   sep = " - "
 )
 
-dat_without_bio$level_298 <- paste(
+dat_without_bio$level_160 <- paste(
   dat_without_bio$year,
   dat_without_bio$quarter,
   dat_without_bio$area_impu,
@@ -373,7 +373,7 @@ dat_without_bio$level_298 <- paste(
 
 # level 299
 
-dat_with_bio$level_299 <- paste(
+dat_with_bio$level_161 <- paste(
   dat_with_bio$year,
   dat_with_bio$quarter,
   dat_with_bio$area_impu,
@@ -382,7 +382,7 @@ dat_with_bio$level_299 <- paste(
   sep = " - "
 )
 
-dat_without_bio$level_299 <- paste(
+dat_without_bio$level_161 <- paste(
   dat_without_bio$year_impu_v1,
   dat_without_bio$quarter_impu_v1,
   dat_without_bio$area_impu,
@@ -392,7 +392,7 @@ dat_without_bio$level_299 <- paste(
 )
 # level 300
 
-dat_with_bio$level_300 <- paste(
+dat_with_bio$level_162 <- paste(
   dat_with_bio$year,
   dat_with_bio$quarter,
   dat_with_bio$area_impu,
@@ -401,7 +401,7 @@ dat_with_bio$level_300 <- paste(
   sep = " - "
 )
 
-dat_without_bio$level_300 <- paste(
+dat_without_bio$level_162 <- paste(
   dat_without_bio$year,
   dat_without_bio$quarter_impu_v2,
   dat_without_bio$area_impu,
@@ -415,6 +415,8 @@ check_levels_all <- dat_without_bio[1, ]
 
 names(check_levels_all)
 
+write.table(dat_with_bio, paste0("../data/11_her2024_canum_with_samples_", min(years_time_series), "_", year_impute, ".csv"), row.names = F, sep = ";")
+
 ```
 
 # Impute - Loop over levels
@@ -427,7 +429,7 @@ names(check_levels_all)
 dat_imputed_subfleet <- c()
 
 
-for (i in c(1:300)) {
+for (i in c(1:162)) {
   # Identify level
   
   dat_with_bio$level_here <- dat_with_bio[, paste0("level_", i)]
@@ -465,7 +467,7 @@ for (i in c(1:300)) {
 
 dat_imputed_fleet <- c()
 
-for (i in c(1:300)) {
+for (i in c(1:162)) {
   # Identify level
   
   dat_with_bio$level_here <- dat_with_bio[, paste0("level_", i)]
@@ -512,8 +514,11 @@ dat_without_bio_sum <- summarise(group_by(dat_without_bio, year), t_without_bio 
 
 comb <- left_join(left_join(left_join(dat_with_bio_sum, dat_imputed_sum), dat_without_bio_sum), dat_all)
 
+comb <- subset(comb, year == year_impute)
+
 dat_imputed$tons <- round(dat_imputed$catch_t, 0)
 
+dat_with_bio <- subset(dat_with_bio, year == year_impute)
 dat_with_bio$level <- 0
 dat_with_bio$level_used <- "sampled"
 dat_with_bio$tons <- round(dat_with_bio$catch_t, 0)
@@ -713,21 +718,21 @@ nrow(subset(dat_imputed, sopCorr != 1))
 
 ```{r, include = F}
 
-write.table(dat_done, "../data/21_updated_canum_with_imputations_2000_2024.csv", row.names = F, sep = ";")
+write.table(dat_done, paste0("../data/11_her2024_canum_with_imputations_", year_impute, ".csv"), row.names = F, sep = ";")
 
 
-# For split
-dat_split <- subset(dat_done, area %in% c("27.3.a.20", "27.3.a.21"))
-dat_split_sum <- summarise(group_by(dat_split, year, ctry, area, 
-                                      quarter, wr),
-                             canumNew_1000 = sum(canum_1000, na.rm = T),
-                             weca_g = sum(canum_1000 * weca_g, na.rm = T) / sum(canum_1000, na.rm = T))
-
-dat_split_sum$canumSop <- dat_split_sum$canumNew_1000 * (dat_split_sum$weca_g / 1000)
-dat_split_sum$weca_kg <- dat_split_sum$weca_g / 1000
-dat_split_sum$canumNew_1000000 <- dat_split_sum$canumNew_1000 / 1000
-
-
-write.table(dat_split_sum, "../data/21_updated_canum_with_imputations_for_split_2000_2024.csv", row.names = F, sep = ";")
+# # For split
+# dat_split <- subset(dat_done, area %in% c("27.3.a.20", "27.3.a.21"))
+# dat_split_sum <- summarise(group_by(dat_split, year, ctry, area, 
+#                                       quarter, wr),
+#                              canumNew_1000 = sum(canum_1000, na.rm = T),
+#                              weca_g = sum(canum_1000 * weca_g, na.rm = T) / sum(canum_1000, na.rm = T))
+# 
+# dat_split_sum$canumSop <- dat_split_sum$canumNew_1000 * (dat_split_sum$weca_g / 1000)
+# dat_split_sum$weca_kg <- dat_split_sum$weca_g / 1000
+# dat_split_sum$canumNew_1000000 <- dat_split_sum$canumNew_1000 / 1000
+# 
+# 
+# write.table(dat_split_sum, "../data/21_updated_canum_with_imputations_for_split_2000_2024.csv", row.names = F, sep = ";")
 
 ```
