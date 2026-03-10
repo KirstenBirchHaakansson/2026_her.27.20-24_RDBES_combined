@@ -721,18 +721,18 @@ nrow(subset(dat_imputed, sopCorr != 1))
 write.table(dat_done, paste0("../data/11_her2024_canum_with_imputations_", year_impute, ".csv"), row.names = F, sep = ";")
 
 
-# # For split
-# dat_split <- subset(dat_done, area %in% c("27.3.a.20", "27.3.a.21"))
-# dat_split_sum <- summarise(group_by(dat_split, year, ctry, area, 
-#                                       quarter, wr),
-#                              canumNew_1000 = sum(canum_1000, na.rm = T),
-#                              weca_g = sum(canum_1000 * weca_g, na.rm = T) / sum(canum_1000, na.rm = T))
-# 
-# dat_split_sum$canumSop <- dat_split_sum$canumNew_1000 * (dat_split_sum$weca_g / 1000)
-# dat_split_sum$weca_kg <- dat_split_sum$weca_g / 1000
-# dat_split_sum$canumNew_1000000 <- dat_split_sum$canumNew_1000 / 1000
-# 
-# 
-# write.table(dat_split_sum, "../data/21_updated_canum_with_imputations_for_split_2000_2024.csv", row.names = F, sep = ";")
+# For split
+dat_split <- subset(dat_done, area %in% c("27.3.a.20", "27.3.a.21"))
+dat_split_sum <- summarise(group_by(dat_split, year, ctry, area,
+                                      quarter, wr),
+                             canumNew_1000 = sum(canum_1000, na.rm = T),
+                             weca_g = sum(canum_1000 * weca_g, na.rm = T) / sum(canum_1000, na.rm = T))
+
+dat_split_sum$canumSop <- dat_split_sum$canumNew_1000 * (dat_split_sum$weca_g / 1000)
+dat_split_sum$weca_kg <- dat_split_sum$weca_g / 1000
+dat_split_sum$canumNew_1000000 <- dat_split_sum$canumNew_1000 / 1000
+
+
+write.table(dat_split_sum, paste0("../data/11_her2024_canum_with_imputations_for_split", year_impute,".csv"), row.names = F, sep = ";")
 
 ```
