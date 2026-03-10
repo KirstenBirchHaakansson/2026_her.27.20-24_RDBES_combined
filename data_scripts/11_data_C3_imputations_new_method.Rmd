@@ -59,6 +59,7 @@ datatable(check_fleets, filter = 'top', options = list(
 class = 'cell-border stripe')
 ```
 
+
 # Create imputation domains
 
 ```{r, include = T}
@@ -419,6 +420,41 @@ write.table(dat_with_bio, paste0("../data/11_her2024_canum_with_samples_", min(y
 
 ```
 
+
+# Impute - Manual
+
+```{r}
+
+# In 2025 Poland has a large amount of by-catch (active < 32mm) in area 24, quarter 4
+# The automated loop assign a Danish sample from the sandeel fishery (with a single herring)  
+# It was believed that a Polish sample from 2024 would represent the fishery better
+# So here we go ......
+
+dat_with_bio_manual <- subset(dat_with_bio, year == 2024 &
+                                ctry == "Poland" & 
+                                area == "27.3.d.24" &
+                                subFleet == "active < 32mm" &
+                                quarter == 4)
+
+unique(dat_with_bio_manual$level_1)
+
+dat_with_bio$level_999[dat_with_bio$year == 2024 &
+                       dat_with_bio$ctry == "Poland" &
+                       dat_with_bio$area == "27.3.d.24" &
+                       dat_with_bio$subFleet == "active < 32mm" &
+                       dat_with_bio$quarter == 4] <- unique(dat_with_bio_manual$level_1)
+
+dat_without_bio$level_999[dat_without_bio$year == 2025 &
+                       dat_without_bio$ctry == "Poland" &
+                       dat_without_bio$area == "27.3.d.24" &
+                       dat_without_bio$subFleet == "active < 32mm" &
+                       dat_without_bio$quarter == 4] <- unique(dat_with_bio_manual$level_1)
+
+unique(dat_with_bio$level_999)
+unique(dat_without_bio$level_999)
+
+```
+
 # Impute - Loop over levels
 
 ```{r, include = F}
@@ -429,13 +465,14 @@ write.table(dat_with_bio, paste0("../data/11_her2024_canum_with_samples_", min(y
 dat_imputed_subfleet <- c()
 
 
-for (i in c(1:162)) {
+for (i in c(999, 1:162)) {
   # Identify level
   
   dat_with_bio$level_here <- dat_with_bio[, paste0("level_", i)]
   dat_without_bio$level_here <- dat_without_bio[, paste0("level_", i)]
+  
   dat_with_bio_here <- subset(dat_with_bio, !(subFleet %in% c("C", "D", "F")) & 
-                                !(is.na(subFleet)))
+                                !(is.na(subFleet)) & !(is.na(level_here)))
   
   
   # Aggregate biology per level
@@ -451,7 +488,7 @@ for (i in c(1:162)) {
   
   dat_without_bio <- left_join(dat_without_bio, dat_with_bio_canum_sum)
   dat_without_bio$weca_g <- dat_without_bio$weca_bio
-  dat_without_bio$canum_1000 <- dat_without_bio$canum_bio * (dat_without_bio$catch_t/dat_without_bio$caton_bio)
+  dat_without_bio$canum_1000 <- dat_without_bio$canum_bio *  (dat_without_bio$catch_t/dat_without_bio$caton_bio)
   
   # test <- subset(dat_without_bio, level_used == "2021 - 4 - 27.3.a.21 - C - C - NA")
   # test_bio <- subset(dat_with_bio_canum_sum, level_used == "2021 - 4 - 27.3.a.21 - C - C - NA")
