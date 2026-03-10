@@ -125,10 +125,10 @@ imp <-   read.csv(paste(
     sep = ""
   ), sep = ";")
 
-imp <- distinct(imp, ctry, year, area, fleet, subFleet, quarter, catch_t, 
+imp_for_overview <- distinct(imp, ctry, year, area, fleet, subFleet, quarter, catch_t, 
                 noSample, noLength, noAge, level, level_used)
 
-year_imp <- min(as.numeric(substr(imp$level_used, 1, 4)), na.rm = T)
+year_imp <- min(as.numeric(substr(imp_for_overview$level_used, 1, 4)), na.rm = T)
 
 samples_available <- read.csv(paste(
     "../data/",
@@ -148,6 +148,7 @@ samples_available_bio <- read.csv(paste(
   ), sep = ";")
 
 samples_available_bio <- subset(samples_available_bio, year >= year_imp)
+
 
 
 # mis <- readRDS(paste(
@@ -494,7 +495,7 @@ knitr::kable(sop)
 
 canum_3a <- subset(canum_3, subFleet == "passive" & area %in% c("27.3.a.20", "27.3.a.21") & year == year_0)
 
-imp_sub <- subset(imp, subFleet == "passive" & area %in% c("27.3.a.20", "27.3.a.21") & year == year_0 & level != 0)
+imp_sub <- subset(imp_for_overview, subFleet == "passive" & area %in% c("27.3.a.20", "27.3.a.21") & year == year_0 & level != 0)
 
 samples_available_sub <- subset(samples_available, subFleet == "passive" & area %in% c("27.3.a.20", "27.3.a.21"))
 
@@ -704,7 +705,7 @@ class = 'cell-border stripe') %>%
 
 canum_3a <- subset(canum_3, subFleet == "purse seine" & area %in% c("27.3.a.20", "27.3.a.21") & year == year_0)
 
-imp_sub <- subset(imp, subFleet == "purse seine" & area %in% c("27.3.a.20", "27.3.a.21") & year == year_0 & level != 0)
+imp_sub <- subset(imp_for_overview, subFleet == "purse seine" & area %in% c("27.3.a.20", "27.3.a.21") & year == year_0 & level != 0)
 
 samples_available_sub <- subset(samples_available, subFleet == "purse seine" & area %in% c("27.3.a.20", "27.3.a.21"))
 
@@ -914,7 +915,7 @@ class = 'cell-border stripe') %>%
 
 canum_3a <- subset(canum_3, subFleet == "trawl >= 32mm" & area %in% c("27.3.a.20", "27.3.a.21") & year == year_0)
 
-imp_sub <- subset(imp, subFleet == "trawl >= 32mm" & area %in% c("27.3.a.20", "27.3.a.21") & year == year_0 & level != 0)
+imp_sub <- subset(imp_for_overview, subFleet == "trawl >= 32mm" & area %in% c("27.3.a.20", "27.3.a.21") & year == year_0 & level != 0)
 
 samples_available_sub <- subset(samples_available, subFleet == "trawl >= 32mm" & area %in% c("27.3.a.20", "27.3.a.21"))
 
@@ -1124,7 +1125,7 @@ class = 'cell-border stripe') %>%
 
 canum_3a <- subset(canum_3, subFleet == "trawl < 32mm" & area %in% c("27.3.a.20", "27.3.a.21") & year == year_0)
 
-imp_sub <- subset(imp, subFleet == "trawl < 32mm" & area %in% c("27.3.a.20", "27.3.a.21") & year == year_0 & level != 0)
+imp_sub <- subset(imp_for_overview, subFleet == "trawl < 32mm" & area %in% c("27.3.a.20", "27.3.a.21") & year == year_0 & level != 0)
 
 samples_available_sub <- subset(samples_available, subFleet == "trawl < 32mm" & area %in% c("27.3.a.20", "27.3.a.21"))
 
@@ -1333,7 +1334,7 @@ class = 'cell-border stripe') %>%
 
 canum_3a <- subset(canum_3, subFleet == "passive" & area %in% c("27.3.b.23", "27.3.c.22", "27.3.d.24") & year == year_0)
 
-imp_sub <- subset(imp, subFleet == "passive" & area %in% c("27.3.b.23", "27.3.c.22", "27.3.d.24") & year == year_0 & level != 0)
+imp_sub <- subset(imp_for_overview, subFleet == "passive" & area %in% c("27.3.b.23", "27.3.c.22", "27.3.d.24") & year == year_0 & level != 0)
 
 samples_available_sub <- subset(samples_available, subFleet == "passive" & area %in% c("27.3.b.23", "27.3.c.22", "27.3.d.24"))
 
@@ -1532,7 +1533,7 @@ class = 'cell-border stripe') %>%
 
 canum_3a <- subset(canum_3, subFleet == "active >= 32mm" & area %in% c("27.3.b.23", "27.3.c.22", "27.3.d.24") & year == year_0)
 
-imp_sub <- subset(imp, subFleet == "active >= 32mm" & area %in% c("27.3.b.23", "27.3.c.22", "27.3.d.24") & year == year_0 & level != 0)
+imp_sub <- subset(imp_for_overview, subFleet == "active >= 32mm" & area %in% c("27.3.b.23", "27.3.c.22", "27.3.d.24") & year == year_0 & level != 0)
 
 samples_available_sub <- subset(samples_available, subFleet == "active >= 32mm" & area %in% c("27.3.b.23", "27.3.c.22", "27.3.d.24"))
 
@@ -1742,7 +1743,7 @@ class = 'cell-border stripe') %>%
 
 canum_3a <- subset(canum_3, subFleet == "active < 32mm" & area %in% c("27.3.b.23", "27.3.c.22", "27.3.d.24") & year == year_0)
 
-imp_sub <- subset(imp, subFleet == "active < 32mm" & area %in% c("27.3.b.23", "27.3.c.22", "27.3.d.24") & year == year_0 & level != 0)
+imp_sub <- subset(imp_for_overview, subFleet == "active < 32mm" & area %in% c("27.3.b.23", "27.3.c.22", "27.3.d.24") & year == year_0 & level != 0)
 
 samples_available_sub <- subset(samples_available, subFleet == "active < 32mm" & area %in% c("27.3.b.23", "27.3.c.22", "27.3.d.24"))
 
@@ -1935,6 +1936,56 @@ class = 'cell-border stripe') %>%
   formatRound(columns = c(7), digits = 3)
 ```
 
+# Numbers, before split
+## Row
+### Summary
+
+Number fish caugth tabulated in different ways - good for checking.
+
+## Row
+
+### Total numbers (1000)
+
+```{r}
+lan_sum <- summarise(group_by(imp, year), canum_1000 = sum(canum_1000))
+lan_sum_t <- tidyr::spread(lan_sum, key = year, value = canum_1000, fill = 0)
+
+knitr::kable(lan_sum_t)
+```
+
+### Numbers per area (1000) 
+```{r}
+lan_sum <- summarise(group_by(imp, year, area), canum_1000 = sum(canum_1000))
+lan_sum_t <- tidyr::spread(lan_sum, key = year, value = canum_1000, fill = 0)
+
+knitr::kable(lan_sum_t)
+```
+
+
+### Numbers per disvision (1000) 
+```{r}
+imp$division <- substr(imp$area, 1, 6)
+lan_sum <- summarise(group_by(imp, year, division), canum_1000 = sum(canum_1000))
+lan_sum_t <- tidyr::spread(lan_sum, key = year, value = canum_1000, fill = 0)
+
+knitr::kable(lan_sum_t)
+```
+
+### Numbers per fleet (1000) 
+```{r}
+lan_sum <- summarise(group_by(imp, year, fleet), canum_1000 = sum(canum_1000))
+lan_sum_t <- tidyr::spread(lan_sum, key = year, value = canum_1000, fill = 0)
+
+knitr::kable(lan_sum_t)
+```
+
+### Numbers per quarter (1000) 
+```{r}
+lan_sum <- summarise(group_by(imp, year, quarter), canum_1000 = sum(canum_1000))
+lan_sum_t <- tidyr::spread(lan_sum, key = year, value = canum_1000, fill = 0)
+
+knitr::kable(lan_sum_t)
+```
 
 # Split
 
