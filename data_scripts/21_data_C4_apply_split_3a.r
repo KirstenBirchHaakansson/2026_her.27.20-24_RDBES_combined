@@ -5,7 +5,7 @@ library(sqldf)
 
 options("scipen" = 1000)
 
-year_0 <- 2024
+year_0 <- 2025
 
 
 #Read in and recode split proportions from Henrik
@@ -17,7 +17,7 @@ split <-
       "boot/data/split_data/",
       "cmoe_split_",
       year_0,
-      "_SD20SD21_v2.csv",
+      "_SD20SD21.csv",
       sep = ""
     ),
     sep = ",",
@@ -40,13 +40,13 @@ split$wr <- ifelse(split$wr == "8", "8+", split$wr)
 #Read in CANUM
 
 canum <-
-  readRDS(paste(
+  read.csv(paste(
     "data/",
-    "C5_her2024_canum_with_imputations_",
+    "11_her2024_canum_with_imputations_",
     year_0,
-    ".rds",
+    ".csv",
     sep = ""
-  ))
+  ), sep = ";")
 
 
 #Apply split proportions
@@ -78,12 +78,12 @@ splitted$wbss_canum_1000[is.na(splitted$wbss_canum_1000)] <- 0
 #WBSS and NSAS
 write.table(
   splitted,
-  paste("data/", "C6_her2024_canum_wbss_nsas_", year_0, ".csv", sep = ""),
-  sep = ",",
+  paste("data/", "21_C4_her2024_canum_wbss_nsas_", year_0, ".csv", sep = ""),
+  sep = ";",
   row.names = F
 )
 saveRDS(splitted,
-        paste("data/", "C6_her2024_canum_wbss_nsas_", year_0, ".rds", sep = ""))
+        paste("data/", "21_C4_her2024_canum_wbss_nsas_", year_0, ".rds", sep = ""))
 
 
 
