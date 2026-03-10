@@ -555,7 +555,7 @@ ggplot(lan_samp, aes(x = noSample, y = catch_t, col = ctry)) +
 
 ### Landings and samples, `r year_0`
 ```{r}
-canum_3a_1 <- distinct(canum_3a,
+canum_3a_1 <- distinct(subset(canum_3a, catch_t != 0),
                        ctry,
                        year,
                        quarter,
@@ -765,7 +765,7 @@ ggplot(lan_samp, aes(x = noSample, y = catch_t, col = ctry)) +
 
 ### Landings and samples, `r year_0`
 ```{r}
-canum_3a_1 <- distinct(canum_3a,
+canum_3a_1 <- distinct(subset(canum_3a, catch_t != 0),
                        ctry,
                        year,
                        quarter,
@@ -975,7 +975,7 @@ ggplot(lan_samp, aes(x = noSample, y = catch_t, col = ctry)) +
 
 ### Landings and samples, `r year_0`
 ```{r}
-canum_3a_1 <- distinct(canum_3a,
+canum_3a_1 <- distinct(subset(canum_3a, catch_t != 0),
                        ctry,
                        year,
                        quarter,
@@ -1185,7 +1185,7 @@ ggplot(lan_samp, aes(x = noSample, y = catch_t, col = ctry)) +
 
 ### Landings and samples, `r year_0`
 ```{r}
-canum_3a_1 <- distinct(canum_3a,
+canum_3a_1 <- distinct(subset(canum_3a, catch_t != 0),
                        ctry,
                        year,
                        quarter,
@@ -1394,7 +1394,7 @@ ggplot(lan_samp, aes(x = noSample, y = catch_t, col = ctry)) +
 
 ### Landings and samples, `r year_0`
 ```{r}
-canum_3a_1 <- distinct(canum_3a,
+canum_3a_1 <- distinct(subset(canum_3a, catch_t != 0),
                        ctry,
                        year,
                        quarter,
@@ -1593,7 +1593,7 @@ ggplot(lan_samp, aes(x = noSample, y = catch_t, col = ctry)) +
 
 ### Landings and samples, `r year_0`
 ```{r}
-canum_3a_1 <- distinct(canum_3a,
+canum_3a_1 <- distinct(subset(canum_3a, catch_t != 0),
                        ctry,
                        year,
                        quarter,
@@ -1803,7 +1803,7 @@ ggplot(lan_samp, aes(x = noSample, y = catch_t, col = ctry)) +
 
 ### Landings and samples, `r year_0`
 ```{r}
-canum_3a_1 <- distinct(canum_3a,
+canum_3a_1 <- distinct(subset(canum_3a, catch_t != 0),
                        ctry,
                        year,
                        quarter,
