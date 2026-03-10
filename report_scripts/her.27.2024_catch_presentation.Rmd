@@ -251,15 +251,33 @@ names(ddc.col)  <- ddc
 
 ```
 
-# Version `r paste0(lubridate::today(), "-v2")`
+# Version `r paste0(lubridate::today(), "-v4")`
 
 ## Row
 
 ### Versions
 
-202-03-09-v1 - 1st version
+2026-03-09-v1 - 1st version
 
-202-03-09-v1 - Updated with Norwegian purse seine biology from the transfer area. Updated plots
+2026-03-09-v2 - Updated with Norwegian purse seine biology from the transfer area. Updated plots
+
+2026-03-10-v3 - Updated Danish input data. I had forgotten to delete numbers of sampled for 2 unsampled strata.
+
+2026-03-10-v4 <- Removed 'Overall lan & samp'- and included SOP overview instead.
+
+## Row
+
+### Data & scripts
+SC scripts can be found at https://github.com/KirstenBirchHaakansson/2026_her.27.20-24_RDBES_combined
+
+Data in the boot folder at https://icesit.sharepoint.com/:f:/r/sites/ExpertGroup/HAWG/2026_Meeting_Documents/06.%20Data/WBSS/SC_data?csf=1&web=1&e=tXRkk3
+
+## Row
+
+### Notes
+We need to see if we can improve national sampling, since a lot of the catches are unsampled.
+
+Should we use the data call feedback to make countries aware of this problem?
 
 # Overall lan, fig
 
@@ -320,6 +338,11 @@ ggplot(lan_fleet_plot, aes(x = year, y = catch_ton, fill = ctry)) +
 ```
 
 # Overall lan, tab
+
+## Row
+### Summary
+
+Landings tabulated in different ways - good for checking.
 
 ## Row
 
@@ -438,63 +461,31 @@ class = 'cell-border stripe') %>%
   formatRound(columns = c(5:9), digits = 3)
 ```
 
-# Overall lan & samp
+# SOP check2
 
 ## Row
-
 ### Summary
+This is main for a final check
 
-We have a lot of unsampled strata and strata with very few samples, e.g., in 27.3.a.20 we started with one sample (the 1 Norwegian samples from the ps are from the transfer area)
-
-So a lot of borrowing ..... samples from the tranfer area and 2023
-
-## Row
-
-### landings and sampling 27.3.a {.no-padding}
-
-```{r, echo = F}
-
-lan_samp <- distinct(subset(canum_3, year == year_0 & area %in% c("27.3.a.20", "27.3.a.21") & catch_t > 0), year, catch_t, subFleet, area, ctry, quarter, noSample)
-
-ggplot(lan_samp, aes(x = noSample, y = catch_t, col = ctry)) +
-  geom_point(size = 3) + 
-  geom_vline(xintercept = 3) +
-  facet_grid(area~subFleet) +
-  scale_color_manual(values = ddc.col) +
-  labs(title = paste0("Her.27.20-27. Landed tons per number of samples, ", year_0), x = "Number of sample", y = "Tons") + 
-  theme(legend.position="bottom")
-
-```
-
-### landings and sampling 27.3.b, 27.3.c, 27.3.d.24 {.no-padding}
-
-```{r, echo = F}
-
-lan_samp <- distinct(subset(canum_3, year == year_0 & area %in% c("27.3.b.23", "27.3.c.22", "27.3.d.24") & catch_t > 0), year, catch_t, subFleet, area, ctry, quarter, noSample)
-
-ggplot(lan_samp, aes(x = noSample, y = catch_t, col = ctry)) +
-  geom_point(size = 3) + 
-  geom_vline(xintercept = 3) +
-  facet_grid(area~subFleet) +
-  scale_color_manual(values = ddc.col) +
-  labs(title = paste0("Her.27.20-27. Landed tons per number of samples, ", year_0), x = "Number of sample", y = "Tons") + 
-  theme(legend.position="bottom")
-
-```
-
-## Row
-
-### Tabulated landings and sampling, tabulated
-
+## Row {data-height="500"}
 ```{r}
-samp_all <- distinct(subset(canum_3, catch_t > 0 & year == year_0), ctry, year, quarter, area, subFleet, catch_t, noSample, noLength, noAge)
+sop <- distinct(
+  subset(
+    canum_3, !(is.na(sop)) & year == year_0
+  ),
+  ctry,
+  year, 
+  area, 
+  subFleet, 
+  quarter,
+  catch_t,
+  sop,
+  sopCorr
+)
 
-datatable(samp_all, filter = 'top', options = list(
-  pageLength = nrow(samp_all), autoWidth = F, scrollY = F
-),
-class = 'cell-border stripe') %>%
-  formatRound(columns = c(6), digits = 3)
+knitr::kable(sop)
 ```
+
 
 # Lan & samp, 27.3.a, p
 
@@ -2012,6 +2003,7 @@ knitr::kable(lan_sum_t)
 <!-- ## Row -->
 
 <!-- ### Split proportions from Florian -->
+
 
 ```{r, eval = F}
 split <-
