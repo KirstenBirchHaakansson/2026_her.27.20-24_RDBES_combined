@@ -69,6 +69,15 @@ draft.data(data.files = "submitted_data/DC_Annex_HAWG3 her.27.20-24 template_DNK
            file = T,
            append = T)
 
+draft.data(data.files = "submitted_data/DC_Annex_HAWG3 her.27.20-24 template_DNK_2025_v3.xlsx",
+           data.scripts = NULL,
+           originator = "Corrected by kibi",
+           title = "Had forgotten to delete number sampled in some unsampled strata. Correct a wrong fleet in one of the area 23 sheets",
+           period = "2025",
+           access = "Restricted",
+           file = T,
+           append = T)
+
 draft.data(data.files = "submitted_data/SE_2026 DC HAWG her.27.20-24 YellowSheet_v2.xlsx",
            data.scripts = NULL,
            originator = "Data submitted to HAWG",
