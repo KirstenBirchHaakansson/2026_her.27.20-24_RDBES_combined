@@ -151,23 +151,6 @@ samples_available_bio <- read.csv(paste(
 samples_available_bio <- subset(samples_available_bio, year >= year_imp)
 
 
-
-# mis <- readRDS(paste(
-#     "../data/",
-#     "C5_her2024_canum_with_imputations_subfleets_", year_0, ".rds",
-#     sep = ""
-#   ))
-# 
-# mis <- distinct(mis, ctry, year, area, fleet, subFleet, quarter, catch_t, 
-#                 noSamples, noLength, noAge, comment, comment1) 
-# 
-# mis$ctry <- as.factor(mis$ctry)
-# mis$area <- as.factor(mis$area)
-# mis$fleet <- as.factor(mis$fleet)
-# mis$quarter <- as.factor(mis$quarter)
-# mis$subFleet <- as.factor(mis$subFleet)
-# mis$year <- as.numeric(mis$year)
-
 # splitted <- read.csv(paste(
 #     "../data/",
 #     "C7_wbss_multi_fleet_", year_0, ".csv",
@@ -277,15 +260,24 @@ names(ddc.col)  <- ddc
 
 SC scripts can be found at <https://github.com/KirstenBirchHaakansson/2026_her.27.20-24_RDBES_combined>
 
-Data in the boot folder at <https://icesit.sharepoint.com/:f:/r/sites/ExpertGroup/HAWG/2026_Meeting_Documents/06.%20Data/WBSS/SC_data?csf=1&web=1&e=tXRkk3>
+Input and output data can be found at <https://icesit.sharepoint.com/:f:/r/sites/ExpertGroup/HAWG/2026_Meeting_Documents/06.%20Data/WBSS/SC_data?csf=1&web=1&e=tXRkk3>. inputs in boot and outputs in data.
+
+This 'presentation' can be found at https://icesit.sharepoint.com/:f:/r/sites/ExpertGroup/HAWG/2026_Meeting_Documents/05.%20Presentations?csf=1&web=1&e=i5i19U
 
 ## Row
 
 ### Notes
+#### Sampling
 
 We need to see if we can improve national sampling, since a lot of the catches are unsampled.
 
 Should we use the data call feedback to make countries aware of this problem?
+
+I think we should start with a mail
+
+#### Data and scripts
+
+
 
 # Overall lan, fig
 
@@ -2103,7 +2095,7 @@ class = 'cell-border stripe') %>%
 
 Number fish caugth tabulated in different ways - good for checking.
 
-**Under construction**
+***Under construction***
 
 ## Row
 
