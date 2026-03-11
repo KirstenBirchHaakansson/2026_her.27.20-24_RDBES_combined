@@ -5,12 +5,12 @@ library(dplyr)
 library(tidyr)
 library(readxl)
 
-year_0 <- 2024
+year_0 <- 2025
 
 #Read-in
 
 canum3 <-
-  readRDS(paste("data/", "C6_her2024_canum_wbss_nsas_", year_0, ".rds", sep =
+  readRDS(paste("data/", "21_C4_her2024_canum_wbss_nsas_", year_0, ".rds", sep =
                   ""))
 canum3$weca_kg <- canum3$weca_g / 1000
 
@@ -57,7 +57,7 @@ wbssFinal$weca_kg <- (wbssFinal$wbss_caton / wbssFinal$wbss_canum_1000)
 
 write.table(
   wbssFinal,
-  paste("data/", "C7_wbss_multi_fleet_area_", year_0, ".csv", sep = ""),
+  paste("data/", "31_wbss_multi_fleet_area_", year_0, ".csv", sep = ""),
   sep = ",",
   row.names = F
 )
@@ -74,7 +74,7 @@ wbssFinal$weca_kg <- (wbssFinal$wbss_caton / wbssFinal$wbss_canum_1000)
 
 write.table(
   wbssFinal,
-  paste("data/", "C7_wbss_multi_fleet_", year_0, ".csv", sep = ""),
+  paste("data/", "31_wbss_multi_fleet_", year_0, ".csv", sep = ""),
   sep = ",",
   row.names = F
 )
@@ -104,7 +104,7 @@ wbssFinal_t <-
 
 write.table(
   wbssFinal_t,
-  paste("data/", "C7_wbss_multi_fleet_t_", year_0, ".csv", sep = ""),
+  paste("data/", "31_wbss_multi_fleet_t_", year_0, ".csv", sep = ""),
   sep = ",",
   row.names = F
 )
@@ -120,7 +120,7 @@ wbssFinal$weca_kg <- (wbssFinal$wbss_caton / wbssFinal$wbss_canum_1000)
 
 write.table(
   wbssFinal,
-  paste("data/", "C7_wbss_single_fleet_", year_0, ".csv", sep = ""),
+  paste("data/", "31_wbss_single_fleet_", year_0, ".csv", sep = ""),
   sep = ",",
   row.names = F
 )
@@ -150,7 +150,7 @@ wbssFinal_t <-
 
 write.table(
   wbssFinal_t,
-  paste("data/", "C7_wbss_single_fleet_t_", year_0, ".csv", sep = ""),
+  paste("data/", "31_wbss_single_fleet_t_", year_0, ".csv", sep = ""),
   sep = ",",
   row.names = F
 )
@@ -168,7 +168,7 @@ nsasFinal$weca_kg <- (nsasFinal$nsas_caton / nsasFinal$nsas_canum_1000)
 
 write.table(
   subset(nsasFinal, fleet %in% c("C", "D")),
-  paste("data/", "C7_nsas_input_fleet_", year_0, ".csv", sep = ""),
+  paste("data/", "31_nsas_input_fleet_", year_0, ".csv", sep = ""),
   sep = ",",
   row.names = F
 )
@@ -184,7 +184,7 @@ nsasFinal$weca_kg <- (nsasFinal$nsas_caton / nsasFinal$nsas_canum_1000)
 
 write.table(
   subset(nsasFinal),
-  paste("data/", "C7_nsas_input_total_", year_0, ".csv", sep = ""),
+  paste("data/", "31_nsas_input_total_", year_0, ".csv", sep = ""),
   sep = ",",
   row.names = F
 )
@@ -203,7 +203,7 @@ nsasFinal$weca_kg <- (nsasFinal$nsas_caton / nsasFinal$nsas_canum_1000)
 
 write.table(
   subset(nsasFinal),
-  paste("data/", "C7_nsas_input_quarter_", year_0, ".csv", sep = ""),
+  paste("data/", "31_nsas_input_quarter_", year_0, ".csv", sep = ""),
   sep = ",",
   row.names = F
 )
@@ -224,7 +224,7 @@ nsasFinal$weca_kg <- (nsasFinal$nsas_caton / nsasFinal$nsas_canum_1000)
 
 write.table(
   subset(nsasFinal),
-  paste("data/", "C7_nsas_input_fleet_area_", year_0, ".csv", sep = ""),
+  paste("data/", "31_nsas_input_fleet_area_", year_0, ".csv", sep = ""),
   sep = ",",
   row.names = F
 )
@@ -244,7 +244,7 @@ wbssFinalq$weca_kg <-
 
 write.table(
   wbssFinalq,
-  paste("data/", "C7_wbss_input_quarter_", year_0, ".csv", sep = ""),
+  paste("data/", "31_wbss_input_quarter_", year_0, ".csv", sep = ""),
   sep = ",",
   row.names = F
 )
@@ -274,7 +274,7 @@ wbssFinalq_t <-
 
 write.table(
   wbssFinalq_t,
-  paste("data/", "C7_wbss_input_quarter_t_", year_0, ".csv", sep = ""),
+  paste("data/", "31_wbss_input_quarter_t_", year_0, ".csv", sep = ""),
   sep = ",",
   row.names = F
 )
