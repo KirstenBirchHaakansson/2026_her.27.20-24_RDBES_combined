@@ -1,5 +1,5 @@
 ---
-title: "her.27.20-24 - catch data 2024"
+title: "her.27.20-24 - catch data 2025"
 output: 
   flexdashboard::flex_dashboard:
     orientation: rows
@@ -119,13 +119,14 @@ canum_3$quarter <- as.factor(canum_3$quarter)
 canum_3$subFleet <- as.factor(canum_3$subFleet)
 canum_3$year <- as.numeric(canum_3$year)
 
-imp <-   read.csv(paste(
+
+canum_final <-   read.csv(paste(
     "../data/",
     "11_her2024_canum_with_imputations_", year_0, ".csv",
     sep = ""
   ), sep = ";")
 
-imp_for_overview <- distinct(imp, ctry, year, area, fleet, subFleet, quarter, catch_t, 
+imp_for_overview <- distinct(canum_final, ctry, year, area, fleet, subFleet, quarter, catch_t, 
                 noSample, noLength, noAge, level, level_used)
 
 year_imp <- min(as.numeric(substr(imp_for_overview$level_used, 1, 4)), na.rm = T)
@@ -252,7 +253,7 @@ names(ddc.col)  <- ddc
 
 ```
 
-# Version `r paste0(lubridate::today(), "-v4")`
+# Version `r paste0(lubridate::today(), "-v6")`
 
 ## Row
 
@@ -264,18 +265,24 @@ names(ddc.col)  <- ddc
 
 2026-03-10-v3 - Updated Danish input data. I had forgotten to delete numbers of sampled for 2 unsampled strata.
 
-2026-03-10-v4 <- Removed 'Overall lan & samp'- and included SOP overview instead.
+2026-03-10-v4 - Removed 'Overall lan & samp'- and included SOP overview instead.
+
+2026-03-10-v5 - Updated with a manual imputation in area 24, active \< 32 mm. Updated year in title.
+
+2026-03-10-v6 - Added resulting CANUM and WECA
 
 ## Row
 
 ### Data & scripts
-SC scripts can be found at https://github.com/KirstenBirchHaakansson/2026_her.27.20-24_RDBES_combined
 
-Data in the boot folder at https://icesit.sharepoint.com/:f:/r/sites/ExpertGroup/HAWG/2026_Meeting_Documents/06.%20Data/WBSS/SC_data?csf=1&web=1&e=tXRkk3
+SC scripts can be found at <https://github.com/KirstenBirchHaakansson/2026_her.27.20-24_RDBES_combined>
+
+Data in the boot folder at <https://icesit.sharepoint.com/:f:/r/sites/ExpertGroup/HAWG/2026_Meeting_Documents/06.%20Data/WBSS/SC_data?csf=1&web=1&e=tXRkk3>
 
 ## Row
 
 ### Notes
+
 We need to see if we can improve national sampling, since a lot of the catches are unsampled.
 
 Should we use the data call feedback to make countries aware of this problem?
@@ -341,6 +348,7 @@ ggplot(lan_fleet_plot, aes(x = year, y = catch_ton, fill = ctry)) +
 # Overall lan, tab
 
 ## Row
+
 ### Summary
 
 Landings tabulated in different ways - good for checking.
@@ -465,10 +473,13 @@ class = 'cell-border stripe') %>%
 # SOP check2
 
 ## Row
+
 ### Summary
+
 This is main for a final check
 
 ## Row {data-height="500"}
+
 ```{r}
 sop <- distinct(
   subset(
@@ -487,9 +498,7 @@ sop <- distinct(
 knitr::kable(sop)
 ```
 
-
 # Lan & samp, 27.3.a, p
-
 
 ```{r, include = F}
 
@@ -503,8 +512,9 @@ samples_available_bio_sub <- subset(samples_available_bio, subFleet == "passive"
 
 mw_max <- max(samples_available_bio_sub$weca_g, na.rm = T)
 
-```
+canum_final_sub <- subset(canum_final, subFleet == "passive" & area %in% c("27.3.a.20", "27.3.a.21"))
 
+```
 
 ## Row {data-height="500"}
 
@@ -546,6 +556,7 @@ ggplot(lan_samp, aes(x = noSample, y = catch_t, col = ctry)) +
 ## Row
 
 ### Landings and samples, `r year_0`
+
 ```{r}
 canum_3a_1 <- distinct(subset(canum_3a, catch_t != 0),
                        ctry,
@@ -584,13 +595,13 @@ datatable(
 ## Row
 
 ### Available samples, `r year_d` -`r year_0`
+
 ```{r}
 datatable(samples_available_sub, filter = 'top', options = list(
   pageLength = 10, autoWidth = F, scrollY = F
 ),
 class = 'cell-border stripe')
 ```
-
 
 ## Row
 
@@ -688,7 +699,27 @@ if (nrow(samples_available_bio_sub_1) > 0) {
 
 ## Row
 
-### Imputations, results
+### Resulting CANUM, relative, `r year_0`
+
+```{r}
+canum_final_sub_1 <- subset(canum_final_sub, year == year_0)
+if (nrow(canum_final_sub)) {
+  generate_presentation_plot(canum_final_sub, "relative age")
+}
+```
+
+### Resulting mean weight at age, `r year_0`
+
+```{r}
+canum_final_sub_1 <- subset(canum_final_sub, year == year_0)
+if (nrow(canum_final_sub_1) > 0) {
+  generate_presentation_plot(canum_final_sub_1, "mean_weight", mw_max)
+}
+```
+
+## Row
+
+### Imputations
 
 ```{r, eval = T}
 datatable(imp_sub, filter = 'top', options = list(
@@ -699,7 +730,6 @@ class = 'cell-border stripe') %>%
 ```
 
 # Lan & samp, 27.3.a, ps
-
 
 ```{r, include = F}
 
@@ -713,8 +743,9 @@ samples_available_bio_sub <- subset(samples_available_bio, subFleet == "purse se
 
 mw_max <- max(samples_available_bio_sub$weca_g, na.rm = T)
 
-```
+canum_final_sub <- subset(canum_final,subFleet == "purse seine" & area %in% c("27.3.a.20", "27.3.a.21"))
 
+```
 
 ## Row {data-height="500"}
 
@@ -756,6 +787,7 @@ ggplot(lan_samp, aes(x = noSample, y = catch_t, col = ctry)) +
 ## Row
 
 ### Landings and samples, `r year_0`
+
 ```{r}
 canum_3a_1 <- distinct(subset(canum_3a, catch_t != 0),
                        ctry,
@@ -794,13 +826,13 @@ datatable(
 ## Row
 
 ### Available samples, `r year_d` -`r year_0`
+
 ```{r}
 datatable(samples_available_sub, filter = 'top', options = list(
   pageLength = 10, autoWidth = F, scrollY = F
 ),
 class = 'cell-border stripe')
 ```
-
 
 ## Row
 
@@ -893,6 +925,26 @@ if (nrow(samples_available_bio_sub_1) > 0) {
 samples_available_bio_sub_1 <- subset(samples_available_bio_sub, year == year_d)
 if (nrow(samples_available_bio_sub_1) > 0) {
   generate_presentation_plot(samples_available_bio_sub_1, "mean_weight", mw_max)
+}
+```
+
+## Row
+
+### Resulting CANUM, relative, `r year_0`
+
+```{r}
+canum_final_sub_1 <- subset(canum_final_sub, year == year_0)
+if (nrow(canum_final_sub)) {
+  generate_presentation_plot(canum_final_sub, "relative age")
+}
+```
+
+### Resulting mean weight at age, `r year_0`
+
+```{r}
+canum_final_sub_1 <- subset(canum_final_sub, year == year_0)
+if (nrow(canum_final_sub_1) > 0) {
+  generate_presentation_plot(canum_final_sub_1, "mean_weight", mw_max)
 }
 ```
 
@@ -910,7 +962,6 @@ class = 'cell-border stripe') %>%
 
 # Lan & samp, 27.3.a, t\>32
 
-
 ```{r, include = F}
 
 canum_3a <- subset(canum_3, subFleet == "trawl >= 32mm" & area %in% c("27.3.a.20", "27.3.a.21") & year == year_0)
@@ -923,8 +974,9 @@ samples_available_bio_sub <- subset(samples_available_bio, subFleet == "trawl >=
 
 mw_max <- max(samples_available_bio_sub$weca_g, na.rm = T)
 
-```
+canum_final_sub <- subset(canum_final,subFleet == "trawl >= 32mm" & area %in% c("27.3.a.20", "27.3.a.21"))
 
+```
 
 ## Row {data-height="500"}
 
@@ -966,6 +1018,7 @@ ggplot(lan_samp, aes(x = noSample, y = catch_t, col = ctry)) +
 ## Row
 
 ### Landings and samples, `r year_0`
+
 ```{r}
 canum_3a_1 <- distinct(subset(canum_3a, catch_t != 0),
                        ctry,
@@ -1004,13 +1057,13 @@ datatable(
 ## Row
 
 ### Available samples, `r year_d` -`r year_0`
+
 ```{r}
 datatable(samples_available_sub, filter = 'top', options = list(
   pageLength = 10, autoWidth = F, scrollY = F
 ),
 class = 'cell-border stripe')
 ```
-
 
 ## Row
 
@@ -1103,6 +1156,26 @@ if (nrow(samples_available_bio_sub_1) > 0) {
 samples_available_bio_sub_1 <- subset(samples_available_bio_sub, year == year_d)
 if (nrow(samples_available_bio_sub_1) > 0) {
   generate_presentation_plot(samples_available_bio_sub_1, "mean_weight", mw_max)
+}
+```
+
+## Row
+
+### Resulting CANUM, relative, `r year_0`
+
+```{r}
+canum_final_sub_1 <- subset(canum_final_sub, year == year_0)
+if (nrow(canum_final_sub)) {
+  generate_presentation_plot(canum_final_sub, "relative age")
+}
+```
+
+### Resulting mean weight at age, `r year_0`
+
+```{r}
+canum_final_sub_1 <- subset(canum_final_sub, year == year_0)
+if (nrow(canum_final_sub_1) > 0) {
+  generate_presentation_plot(canum_final_sub_1, "mean_weight", mw_max)
 }
 ```
 
@@ -1120,7 +1193,6 @@ class = 'cell-border stripe') %>%
 
 # Lan & samp, 27.3.a, t\<32
 
-
 ```{r, include = F}
 
 canum_3a <- subset(canum_3, subFleet == "trawl < 32mm" & area %in% c("27.3.a.20", "27.3.a.21") & year == year_0)
@@ -1133,8 +1205,9 @@ samples_available_bio_sub <- subset(samples_available_bio, subFleet == "trawl < 
 
 mw_max <- max(samples_available_bio_sub$weca_g, na.rm = T)
 
-```
+canum_final_sub <- subset(canum_final,subFleet == "trawl < 32mm" & area %in% c("27.3.a.20", "27.3.a.21"))
 
+```
 
 ## Row {data-height="500"}
 
@@ -1176,6 +1249,7 @@ ggplot(lan_samp, aes(x = noSample, y = catch_t, col = ctry)) +
 ## Row
 
 ### Landings and samples, `r year_0`
+
 ```{r}
 canum_3a_1 <- distinct(subset(canum_3a, catch_t != 0),
                        ctry,
@@ -1214,13 +1288,13 @@ datatable(
 ## Row
 
 ### Available samples, `r year_d` -`r year_0`
+
 ```{r}
 datatable(samples_available_sub, filter = 'top', options = list(
   pageLength = 10, autoWidth = F, scrollY = F
 ),
 class = 'cell-border stripe')
 ```
-
 
 ## Row
 
@@ -1313,6 +1387,26 @@ if (nrow(samples_available_bio_sub_1) > 0) {
 samples_available_bio_sub_1 <- subset(samples_available_bio_sub, year == year_d)
 if (nrow(samples_available_bio_sub_1) > 0) {
   generate_presentation_plot(samples_available_bio_sub_1, "mean_weight", mw_max)
+}
+```
+
+## Row
+
+### Resulting CANUM, relative, `r year_0`
+
+```{r}
+canum_final_sub_1 <- subset(canum_final_sub, year == year_0)
+if (nrow(canum_final_sub)) {
+  generate_presentation_plot(canum_final_sub, "relative age")
+}
+```
+
+### Resulting mean weight at age, `r year_0`
+
+```{r}
+canum_final_sub_1 <- subset(canum_final_sub, year == year_0)
+if (nrow(canum_final_sub_1) > 0) {
+  generate_presentation_plot(canum_final_sub_1, "mean_weight", mw_max)
 }
 ```
 
@@ -1342,8 +1436,9 @@ samples_available_bio_sub <- subset(samples_available_bio, subFleet == "passive"
 
 mw_max <- max(samples_available_bio_sub$weca_g, na.rm = T)
 
-```
+canum_final_sub <- subset(canum_final, subFleet == "passive" & area %in% c("27.3.b.23", "27.3.c.22", "27.3.d.24"))
 
+```
 
 ## Row {data-height="500"}
 
@@ -1385,6 +1480,7 @@ ggplot(lan_samp, aes(x = noSample, y = catch_t, col = ctry)) +
 ## Row
 
 ### Landings and samples, `r year_0`
+
 ```{r}
 canum_3a_1 <- distinct(subset(canum_3a, catch_t != 0),
                        ctry,
@@ -1423,13 +1519,13 @@ datatable(
 ## Row
 
 ### Available samples, `r year_d` -`r year_0`
+
 ```{r}
 datatable(samples_available_sub, filter = 'top', options = list(
   pageLength = 10, autoWidth = F, scrollY = F
 ),
 class = 'cell-border stripe')
 ```
-
 
 ## Row
 
@@ -1512,6 +1608,26 @@ if (nrow(samples_available_bio_sub_1) > 0) {
 samples_available_bio_sub_1 <- subset(samples_available_bio_sub, year == year_d)
 if (nrow(samples_available_bio_sub_1) > 0) {
   generate_presentation_plot(samples_available_bio_sub_1, "mean_weight", mw_max)
+}
+```
+
+## Row
+
+### Resulting CANUM, relative, `r year_0`
+
+```{r}
+canum_final_sub_1 <- subset(canum_final_sub, year == year_0)
+if (nrow(canum_final_sub)) {
+  generate_presentation_plot(canum_final_sub, "relative age")
+}
+```
+
+### Resulting mean weight at age, `r year_0`
+
+```{r}
+canum_final_sub_1 <- subset(canum_final_sub, year == year_0)
+if (nrow(canum_final_sub_1) > 0) {
+  generate_presentation_plot(canum_final_sub_1, "mean_weight", mw_max)
 }
 ```
 
@@ -1541,8 +1657,9 @@ samples_available_bio_sub <- subset(samples_available_bio, subFleet == "active >
 
 mw_max <- max(samples_available_bio_sub$weca_g, na.rm = T)
 
-```
+canum_final_sub <- subset(canum_final, subFleet == "active >= 32mm" & area %in% c("27.3.b.23", "27.3.c.22", "27.3.d.24"))
 
+```
 
 ## Row {data-height="500"}
 
@@ -1584,6 +1701,7 @@ ggplot(lan_samp, aes(x = noSample, y = catch_t, col = ctry)) +
 ## Row
 
 ### Landings and samples, `r year_0`
+
 ```{r}
 canum_3a_1 <- distinct(subset(canum_3a, catch_t != 0),
                        ctry,
@@ -1622,13 +1740,13 @@ datatable(
 ## Row
 
 ### Available samples, `r year_d` -`r year_0`
+
 ```{r}
 datatable(samples_available_sub, filter = 'top', options = list(
   pageLength = 10, autoWidth = F, scrollY = F
 ),
 class = 'cell-border stripe')
 ```
-
 
 ## Row
 
@@ -1721,6 +1839,26 @@ if (nrow(samples_available_bio_sub_1) > 0) {
 samples_available_bio_sub_1 <- subset(samples_available_bio_sub, year == year_d)
 if (nrow(samples_available_bio_sub_1) > 0) {
   generate_presentation_plot(samples_available_bio_sub_1, "mean_weight", mw_max)
+}
+```
+
+## Row
+
+### Resulting CANUM, relative, `r year_0`
+
+```{r}
+canum_final_sub_1 <- subset(canum_final_sub, year == year_0)
+if (nrow(canum_final_sub)) {
+  generate_presentation_plot(canum_final_sub, "relative age")
+}
+```
+
+### Resulting mean weight at age, `r year_0`
+
+```{r}
+canum_final_sub_1 <- subset(canum_final_sub, year == year_0)
+if (nrow(canum_final_sub_1) > 0) {
+  generate_presentation_plot(canum_final_sub_1, "mean_weight", mw_max)
 }
 ```
 
@@ -1738,7 +1876,6 @@ class = 'cell-border stripe') %>%
 
 # Lan & samp, 27.3.bcd, a\<32
 
-
 ```{r, include = F}
 
 canum_3a <- subset(canum_3, subFleet == "active < 32mm" & area %in% c("27.3.b.23", "27.3.c.22", "27.3.d.24") & year == year_0)
@@ -1751,8 +1888,9 @@ samples_available_bio_sub <- subset(samples_available_bio, subFleet == "active <
 
 mw_max <- max(samples_available_bio_sub$weca_g, na.rm = T)
 
-```
+canum_final_sub <- subset(canum_final, subFleet == "active < 32mm" & area %in% c("27.3.b.23", "27.3.c.22", "27.3.d.24"))
 
+```
 
 ## Row {data-height="500"}
 
@@ -1794,6 +1932,7 @@ ggplot(lan_samp, aes(x = noSample, y = catch_t, col = ctry)) +
 ## Row
 
 ### Landings and samples, `r year_0`
+
 ```{r}
 canum_3a_1 <- distinct(subset(canum_3a, catch_t != 0),
                        ctry,
@@ -1832,13 +1971,13 @@ datatable(
 ## Row
 
 ### Available samples, `r year_d` -`r year_0`
+
 ```{r}
 datatable(samples_available_sub, filter = 'top', options = list(
   pageLength = 10, autoWidth = F, scrollY = F
 ),
 class = 'cell-border stripe')
 ```
-
 
 ## Row
 
@@ -1926,6 +2065,26 @@ if (nrow(samples_available_bio_sub_1) > 0) {
 
 ## Row
 
+### Resulting CANUM, relative, `r year_0`
+
+```{r}
+canum_final_sub_1 <- subset(canum_final_sub, year == year_0)
+if (nrow(canum_final_sub)) {
+  generate_presentation_plot(canum_final_sub, "relative age")
+}
+```
+
+### Resulting mean weight at age, `r year_0`
+
+```{r}
+canum_final_sub_1 <- subset(canum_final_sub, year == year_0)
+if (nrow(canum_final_sub_1) > 0) {
+  generate_presentation_plot(canum_final_sub_1, "mean_weight", mw_max)
+}
+```
+
+## Row
+
 ### Imputations, results
 
 ```{r, eval = T}
@@ -1937,51 +2096,58 @@ class = 'cell-border stripe') %>%
 ```
 
 # Numbers, before split
+
 ## Row
+
 ### Summary
 
 Number fish caugth tabulated in different ways - good for checking.
+
+**Under construction**
 
 ## Row
 
 ### Total numbers (1000)
 
 ```{r}
-lan_sum <- summarise(group_by(imp, year), canum_1000 = sum(canum_1000))
+lan_sum <- summarise(group_by(canum_final, year), canum_1000 = sum(canum_1000))
 lan_sum_t <- tidyr::spread(lan_sum, key = year, value = canum_1000, fill = 0)
 
 knitr::kable(lan_sum_t)
 ```
 
-### Numbers per area (1000) 
+### Numbers per area (1000)
+
 ```{r}
-lan_sum <- summarise(group_by(imp, year, area), canum_1000 = sum(canum_1000))
+lan_sum <- summarise(group_by(canum_final, year, area), canum_1000 = sum(canum_1000))
 lan_sum_t <- tidyr::spread(lan_sum, key = year, value = canum_1000, fill = 0)
 
 knitr::kable(lan_sum_t)
 ```
 
+### Numbers per disvision (1000)
 
-### Numbers per disvision (1000) 
 ```{r}
-imp$division <- substr(imp$area, 1, 6)
-lan_sum <- summarise(group_by(imp, year, division), canum_1000 = sum(canum_1000))
+canum_final$division <- substr(canum_final$area, 1, 6)
+lan_sum <- summarise(group_by(canum_final, year, division), canum_1000 = sum(canum_1000))
 lan_sum_t <- tidyr::spread(lan_sum, key = year, value = canum_1000, fill = 0)
 
 knitr::kable(lan_sum_t)
 ```
 
-### Numbers per fleet (1000) 
+### Numbers per fleet (1000)
+
 ```{r}
-lan_sum <- summarise(group_by(imp, year, fleet), canum_1000 = sum(canum_1000))
+lan_sum <- summarise(group_by(canum_final, year, fleet), canum_1000 = sum(canum_1000))
 lan_sum_t <- tidyr::spread(lan_sum, key = year, value = canum_1000, fill = 0)
 
 knitr::kable(lan_sum_t)
 ```
 
-### Numbers per quarter (1000) 
+### Numbers per quarter (1000)
+
 ```{r}
-lan_sum <- summarise(group_by(imp, year, quarter), canum_1000 = sum(canum_1000))
+lan_sum <- summarise(group_by(canum_final, year, quarter), canum_1000 = sum(canum_1000))
 lan_sum_t <- tidyr::spread(lan_sum, key = year, value = canum_1000, fill = 0)
 
 knitr::kable(lan_sum_t)
@@ -2054,7 +2220,6 @@ knitr::kable(lan_sum_t)
 <!-- ## Row -->
 
 <!-- ### Split proportions from Florian -->
-
 
 ```{r, eval = F}
 split <-
