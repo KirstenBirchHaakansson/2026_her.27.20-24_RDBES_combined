@@ -20,7 +20,7 @@ canum4 <-
       "boot/data/split_data/",
       "Her21-IVaE_transfer_only_split_",
       year_0,
-      ".xlsx",
+      "_v2.xlsx",
       sep = ""
     ),
     sheet = 3
