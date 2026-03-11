@@ -17,7 +17,7 @@ split <-
       "boot/data/split_data/",
       "cmoe_split_",
       year_0,
-      "_SD20SD21.csv",
+      "_SD20SD21_v2.csv",
       sep = ""
     ),
     sep = ",",
