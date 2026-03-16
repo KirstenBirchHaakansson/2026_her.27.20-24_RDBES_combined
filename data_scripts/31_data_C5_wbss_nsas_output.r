@@ -160,7 +160,7 @@ write.table(
 
 nsasFinal <-
   aggregate(
-    cbind(nsas_canum_1000, nsas_caton) ~ year + wr + fleet + quarter,
+    cbind(nsas_canum_1000, nsas_caton) ~ year + wr + fleet,
     data = canum,
     FUN = sum
   )
@@ -169,6 +169,24 @@ nsasFinal$weca_kg <- (nsasFinal$nsas_caton / nsasFinal$nsas_canum_1000)
 write.table(
   subset(nsasFinal, fleet %in% c("C", "D")),
   paste("data/", "31_nsas_input_fleet_", year_0, ".csv", sep = ""),
+  sep = ",",
+  row.names = F
+)
+
+#Output per fleet and quarter
+##NSAS
+
+nsasFinal <-
+  aggregate(
+    cbind(nsas_canum_1000, nsas_caton) ~ year + wr + fleet + quarter,
+    data = canum,
+    FUN = sum
+  )
+nsasFinal$weca_kg <- (nsasFinal$nsas_caton / nsasFinal$nsas_canum_1000)
+
+write.table(
+  subset(nsasFinal, fleet %in% c("C", "D")),
+  paste("data/", "31_nsas_input_fleet_quarter_", year_0, ".csv", sep = ""),
   sep = ",",
   row.names = F
 )
