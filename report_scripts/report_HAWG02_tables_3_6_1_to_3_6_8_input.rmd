@@ -1,0 +1,488 @@
+---
+output:
+  word_document:
+    reference_docx: report_HR_style_template.docx
+---
+
+```{r info, include=F}
+
+#This script reads in data and tables directly from www.stockassessment.org
+
+#Remember to save the reference docx for styles the same place at the rmd script - input_tables_SAM_word_style.docx
+
+#To insure that each table starts on a new pages Page Break are inserted - these need to be deleted from the final document
+
+```
+
+
+```{r setup, include=FALSE}
+# devtools::install_github("fishfollower/SAM/stockassessment", ref="multi")
+
+path_root <-
+  "C:/Users/kibi/OneDrive - Danmarks Tekniske Universitet/stock_coord_work/her.27.20-24/2025_her.27.20-24_RDBES_combined/"
+
+# path_root <-
+#   "Q:/mynd/kibi/SC_work/her.27.20-24/2024_her.27.20-24_RDBES_combined/"
+
+knitr::opts_knit$set(root.dir = path_root)
+
+library(stockassessment)
+library(dplyr)
+library(reshape2)
+library(flextable)
+library(data.table)
+
+options(scipen = 999, digits = 1)
+
+#Multi fleet
+dir_dat <-
+  "boot/data/download_from_stockassessment_org_multi_fleet/"
+
+#single fleet
+dir_dat_single <-
+  "boot/data/download_from_stockassessment_org_single_fleet/"
+
+knitr::opts_chunk$set(
+  echo = F,
+  warning = F,
+  message = F,
+  ft.align = "left"
+)
+
+set_flextable_defaults(
+  font.family = "Calibri",
+  font.size = 7.5,
+  padding.bottom = 0,
+  padding.top = 0
+)
+
+```
+
+```{r, echo=F}
+dat <- read.ices(paste(dir_dat, "cn_A.dat", sep = ""))
+
+dat_1 <- data.table(dat, keep.rownames = " ")
+
+t <- flextable(dat_1) %>%
+  set_table_properties(width = 1, layout = "autofit") %>%
+  bold(part = "header") %>%
+  padding(padding.bottom = 0, part = "all") %>%
+  padding(padding.top = 0, part = "all") %>%
+  bg(bg = "#B7D1C3", part = "header") %>%
+  border_inner_h(part = "all") %>%
+  set_caption(
+    caption = paste0(
+      "Table 3.6.1.a - WESTERN BALTIC SPRING SPAWNING HERRING. Multi fleet - Fleet A. Catch in number (CANUM, 1000) per year and age as W-ringers"
+    ),
+    style = "Table Caption"
+  ) %>%
+  colformat_num(big.mark = "", na_str = "-")
+
+t
+```
+
+```{r, echo=F}
+dat <- read.ices(paste(dir_dat, "cn_C.dat", sep = ""))
+
+dat_1 <- data.table(dat, keep.rownames = " ")
+
+t <- flextable(dat_1) %>%
+  set_table_properties(width = 1, layout = "autofit") %>%
+  bold(part = "header") %>%
+  padding(padding.bottom = 0, part = "all") %>%
+  padding(padding.top = 0, part = "all") %>%
+  bg(bg = "#B7D1C3", part = "header") %>%
+  border_inner_h(part = "all") %>%
+  set_caption(
+    caption = paste0(
+      "Table 3.6.1.b - WESTERN BALTIC SPRING SPAWNING HERRING. Multi fleet - Fleet C. Catch in number (CANUM, 1000) per year and age as W-ringers"
+    ),
+    style = "Table Caption"
+  ) %>%
+  colformat_num(big.mark = "", na_str = "-")
+
+t
+```
+
+
+
+```{r, echo=F}
+dat <- read.ices(paste(dir_dat, "cn_D.dat", sep = ""))
+
+dat_1 <- data.table(dat, keep.rownames = " ")
+
+t <- flextable(dat_1) %>%
+  set_table_properties(width = 1, layout = "autofit") %>%
+  bold(part = "header") %>%
+  padding(padding.bottom = 0, part = "all") %>%
+  padding(padding.top = 0, part = "all") %>%
+  bg(bg = "#B7D1C3", part = "header") %>%
+  border_inner_h(part = "all") %>%
+  set_caption(
+    caption = paste0(
+      "Table 3.6.1.c - WESTERN BALTIC SPRING SPAWNING HERRING. Multi fleet - Fleet D. Catch in number (CANUM, 1000) per year and age as W-ringers"
+    ),
+    style = "Table Caption"
+  ) %>%
+  colformat_num(big.mark = "", na_str = "-")
+
+t
+```
+
+```{r, echo=F}
+dat <- read.ices(paste(dir_dat, "cn_F.dat", sep = ""))
+
+dat_1 <- data.table(dat, keep.rownames = " ")
+
+t <- flextable(dat_1) %>%
+  set_table_properties(width = 1, layout = "autofit") %>%
+  bold(part = "header") %>%
+  padding(padding.bottom = 0, part = "all") %>%
+  padding(padding.top = 0, part = "all") %>%
+  bg(bg = "#B7D1C3", part = "header") %>%
+  border_inner_h(part = "all") %>%
+  set_caption(
+    caption = paste0(
+      "Table 3.6.1.d - WESTERN BALTIC SPRING SPAWNING HERRING. Multi fleet - Fleet F. Catch in number (CANUM, 1000) per year and age as W-ringers"
+    ),
+    style = "Table Caption"
+  ) %>%
+  colformat_num(big.mark = "", na_str = "-")
+
+t
+```
+
+
+
+```{r, echo=F}
+cw_A <- round(read.ices(paste(dir_dat, "cw_A.dat", sep = "")), digits = 4)
+dat <- format(cw_A, digits = 4, nsmall = 4)
+
+dat_1 <- data.table(dat, keep.rownames = " ")
+
+t <- flextable(dat_1) %>%
+  set_table_properties(width = 1, layout = "autofit") %>%
+  bold(part = "header") %>%
+  padding(padding.bottom = 0, part = "all") %>%
+  padding(padding.top = 0, part = "all") %>%
+  bg(bg = "#B7D1C3", part = "header") %>%
+  border_inner_h(part = "all") %>%
+  set_caption(
+    caption = paste0(
+      "Table 3.6.2.a - WESTERN BALTIC SPRING SPAWNING HERRING. Multi fleet - Fleet A. Weight at age as W-ringers in the catch (WECA, kg)"
+    ),
+    style = "Table Caption"
+  ) %>%
+  colformat_num(big.mark = "", na_str = "-")
+
+t
+```
+
+
+```{r, echo=F}
+cw_C <- round(read.ices(paste(dir_dat, "cw_C.dat", sep = "")), digits = 4)
+dat <- format(cw_C, digits = 4, nsmall = 4)
+
+dat_1 <- data.table(dat, keep.rownames = " ")
+
+t <- flextable(dat_1) %>%
+  set_table_properties(width = 1, layout = "autofit") %>%
+  bold(part = "header") %>%
+  padding(padding.bottom = 0, part = "all") %>%
+  padding(padding.top = 0, part = "all") %>%
+  bg(bg = "#B7D1C3", part = "header") %>%
+  border_inner_h(part = "all") %>%
+  set_caption(
+    caption = paste0(
+      "Table 3.6.2.b - WESTERN BALTIC SPRING SPAWNING HERRING. Multi fleet - Fleet C. Weight at age as W-ringers in the catch (WECA, kg)"
+    ),
+    style = "Table Caption"
+  ) %>%
+  colformat_num(big.mark = "", na_str = "-")
+
+t
+```
+
+
+
+```{r, echo=F}
+cw_D <- round(read.ices(paste(dir_dat, "cw_D.dat", sep = "")), digits = 4)
+dat <- format(cw_D, digits = 4, nsmall = 4)
+
+dat_1 <- data.table(dat, keep.rownames = " ")
+
+t <- flextable(dat_1) %>%
+  set_table_properties(width = 1, layout = "autofit") %>%
+  bold(part = "header") %>%
+  padding(padding.bottom = 0, part = "all") %>%
+  padding(padding.top = 0, part = "all") %>%
+  bg(bg = "#B7D1C3", part = "header") %>%
+  border_inner_h(part = "all") %>%
+  set_caption(
+    caption = paste0(
+      "Table 3.6.2.c - WESTERN BALTIC SPRING SPAWNING HERRING. Multi fleet - Fleet D. Weight at age as W-ringers in the catch (WECA, kg)"
+    ),
+    style = "Table Caption"
+  ) %>%
+  colformat_num(big.mark = "", na_str = "-")
+
+t
+```
+
+```{r, echo=F}
+cw_F <- round(read.ices(paste(dir_dat, "cw_F.dat", sep = "")), digits = 4)
+dat <- format(cw_F, digits = 4, nsmall = 4)
+
+dat_1 <- data.table(dat, keep.rownames = " ")
+
+t <- flextable(dat_1) %>%
+  set_table_properties(width = 1, layout = "autofit") %>%
+  bold(part = "header") %>%
+  padding(padding.bottom = 0, part = "all") %>%
+  padding(padding.top = 0, part = "all") %>%
+  bg(bg = "#B7D1C3", part = "header") %>%
+  border_inner_h(part = "all") %>%
+  set_caption(
+    caption = paste0(
+      "Table 3.6.2.d - WESTERN BALTIC SPRING SPAWNING HERRING. Multi fleet - Fleet F. Weight at age as W-ringers in the catch (WECA, kg)"
+    ),
+    style = "Table Caption"
+  ) %>%
+  colformat_num(big.mark = "", na_str = "-")
+
+t
+```
+
+
+
+```{r, echo=F}
+sw <- round(read.ices(paste(dir_dat, "sw.dat", sep = "")), digits = 4)
+dat <- format(sw, digits = 4, nsmall = 4)
+
+dat_1 <- data.table(dat, keep.rownames = " ")
+
+t <- flextable(dat_1) %>%
+  set_table_properties(width = 1, layout = "autofit") %>%
+  bold(part = "header") %>%
+  padding(padding.bottom = 0, part = "all") %>%
+  padding(padding.top = 0, part = "all") %>%
+  bg(bg = "#B7D1C3", part = "header") %>%
+  border_inner_h(part = "all") %>%
+  set_caption(
+    caption = paste0(
+      "Table 3.6.3 - WESTERN BALTIC SPRING SPAWNING HERRING. Multi fleet. Weight at age as W-ringers in the stock (WEST, kg)"
+    ),
+    style = "Table Caption"
+  ) %>%
+  colformat_num(big.mark = "", na_str = "-")
+
+t
+```
+
+```{r, echo=F}
+dat <- read.ices(paste(dir_dat, "nm.dat", sep = ""))
+
+dat_1 <- data.table(dat, keep.rownames = " ")
+
+t <- flextable(dat_1) %>%
+  set_table_properties(width = 1, layout = "autofit") %>%
+  bold(part = "header") %>%
+  padding(padding.bottom = 0, part = "all") %>%
+  padding(padding.top = 0, part = "all") %>%
+  bg(bg = "#B7D1C3", part = "header") %>%
+  border_inner_h(part = "all") %>%
+  set_caption(
+    caption = paste0(
+      "Table 3.6.4 - WESTERN BALTIC SPRING SPAWNING HERRING. Multi fleet. Natural mortality (NATMOR)"
+    ),
+    style = "Table Caption"
+  ) %>%
+  colformat_num(big.mark = "", na_str = "-")
+
+t
+```
+
+```{r, echo=F}
+
+dat <- read.ices(paste(dir_dat, "mo.dat", sep = ""))
+
+dat_1 <- data.table(dat, keep.rownames = " ")
+
+t <- flextable(dat_1) %>%
+  set_table_properties(width = 1, layout = "autofit") %>%
+  bold(part = "header") %>%
+  padding(padding.bottom = 0, part = "all") %>%
+  padding(padding.top = 0, part = "all") %>%
+  bg(bg = "#B7D1C3", part = "header") %>%
+  border_inner_h(part = "all") %>%
+  set_caption(
+    caption = paste0(
+      "Table 3.6.5 - WESTERN BALTIC SPRING SPAWNING HERRING. Multi fleet. Proportion mature (MATPROP)"
+    ),
+    style = "Table Caption"
+  ) %>%
+  colformat_num(big.mark = "", na_str = "-")
+
+t
+```
+
+```{r, echo=F}
+dat <- read.ices(paste(dir_dat, "pf.dat", sep = ""))
+dat_1 <- data.table(dat, keep.rownames = " ")
+
+t <- flextable(dat_1) %>%
+  set_table_properties(width = 1, layout = "autofit") %>%
+  bold(part = "header") %>%
+  padding(padding.bottom = 0, part = "all") %>%
+  padding(padding.top = 0, part = "all") %>%
+  bg(bg = "#B7D1C3", part = "header") %>%
+  border_inner_h(part = "all") %>%
+  set_caption(
+    caption = paste0(
+      "Table 3.6.6 - WESTERN BALTIC SPRING SPAWNING HERRING. Multi fleet. Fraction of harvest before spawning (FPROP)"
+    ),
+    style = "Table Caption"
+  ) %>%
+  colformat_num(big.mark = "", na_str = "-")
+
+t
+```
+
+```{r, echo=F}
+dat <- read.ices(paste(dir_dat, "pm.dat", sep = ""))
+dat_1 <- data.table(dat, keep.rownames = " ")
+
+t <- flextable(dat_1) %>%
+  set_table_properties(width = 1, layout = "autofit") %>%
+  bold(part = "header") %>%
+  padding(padding.bottom = 0, part = "all") %>%
+  padding(padding.top = 0, part = "all") %>%
+  bg(bg = "#B7D1C3", part = "header") %>%
+  border_inner_h(part = "all") %>%
+  set_caption(
+    caption = paste0(
+      "Table 3.6.7 - WESTERN BALTIC SPRING SPAWNING HERRING. Multi fleet. Fraction of natural mortality before spawning (MPROP)"
+    ),
+    style = "Table Caption"
+  ) %>%
+  colformat_num(big.mark = "", na_str = "-")
+
+t
+```
+
+```{r, echo=F}
+survey <- read.ices(paste(dir_dat, "survey.dat", sep = ""))
+dat <- survey$HERAS 
+dat_1 <- data.table(dat, keep.rownames = " ")
+
+t <- flextable(dat_1) %>%
+  set_table_properties(width = 1, layout = "autofit") %>%
+  bold(part = "header") %>%
+  padding(padding.bottom = 0, part = "all") %>%
+  padding(padding.top = 0, part = "all") %>%
+  bg(bg = "#B7D1C3", part = "header") %>%
+  border_inner_h(part = "all") %>%
+  set_caption(
+    caption = paste0(
+      "Table 3.6.8.a - WESTERN BALTIC SPRING SPAWNING HERRING. Multi fleet. Survey indices: HERAS (number in 1000)"
+    ),
+    style = "Table Caption"
+  ) %>%
+  colformat_num(big.mark = "", na_str = "-")
+
+t
+```
+
+```{r, echo=F}
+survey<-read.ices(paste(dir_dat,"survey.dat", sep=""))
+dat <- survey$GerAS 
+dat_1 <- data.table(dat, keep.rownames = " ")
+
+t <- flextable(dat_1) %>%
+  set_table_properties(width = 1, layout = "autofit") %>%
+  bold(part = "header") %>%
+  padding(padding.bottom = 0, part = "all") %>%
+  padding(padding.top = 0, part = "all") %>%
+  bg(bg = "#B7D1C3", part = "header") %>%
+  border_inner_h(part = "all") %>%
+  set_caption(
+    caption = paste0(
+      "Table 3.6.8.b - WESTERN BALTIC SPRING SPAWNING HERRING. Multi fleet. Survey indices: GerAS (number in 1000)"
+    ),
+    style = "Table Caption"
+  ) %>%
+  colformat_num(big.mark = "", na_str = "-")
+
+t
+```
+
+
+```{r, echo=F}
+survey <- read.ices(paste(dir_dat, "survey.dat", sep = ""))
+dat <- survey$N20
+dat_1 <- data.table(dat, keep.rownames = " ")
+
+t <- flextable(dat_1) %>%
+  set_table_properties(width = 1, layout = "autofit") %>%
+  bold(part = "header") %>%
+  padding(padding.bottom = 0, part = "all") %>%
+  padding(padding.top = 0, part = "all") %>%
+  bg(bg = "#B7D1C3", part = "header") %>%
+  border_inner_h(part = "all") %>%
+  set_caption(
+    caption = paste0(
+      "Table 3.6.8.c - WESTERN BALTIC SPRING SPAWNING HERRING. Multi fleet. Survey indices: N20 (number in 1000)"
+    ),
+    style = "Table Caption"
+  ) %>%
+  colformat_num(big.mark = "", na_str = "-")
+
+t
+```
+
+```{r, echo=F}
+survey <- read.ices(paste(dir_dat, "survey.dat", sep = ""))
+dat <- survey$`IBTS + BITS Q1`
+dat_1 <- data.table(dat, keep.rownames = " ")
+
+t <- flextable(dat_1) %>%
+  set_table_properties(width = 1, layout = "autofit") %>%
+  bold(part = "header") %>%
+  padding(padding.bottom = 0, part = "all") %>%
+  padding(padding.top = 0, part = "all") %>%
+  bg(bg = "#B7D1C3", part = "header") %>%
+  border_inner_h(part = "all") %>%
+  set_caption(
+    caption = paste0(
+      "Table 3.6.8.d - WESTERN BALTIC SPRING SPAWNING HERRING. Multi fleet. Survey indices: IBTS Q1 + BITS Q1 (number in 1000)"
+    ),
+    style = "Table Caption"
+  ) %>%
+  colformat_num(big.mark = "", na_str = "-")
+
+t
+```
+
+```{r, echo=F}
+survey <- read.ices(paste(dir_dat, "survey.dat", sep = ""))
+dat <- survey$`IBTS Q3 + BITS Q4`
+dat_1 <- data.table(dat, keep.rownames = " ")
+
+t <- flextable(dat_1) %>%
+  set_table_properties(width = 1, layout = "autofit") %>%
+  bold(part = "header") %>%
+  padding(padding.bottom = 0, part = "all") %>%
+  padding(padding.top = 0, part = "all") %>%
+  bg(bg = "#B7D1C3", part = "header") %>%
+  border_inner_h(part = "all") %>%
+  set_caption(
+    caption = paste0(
+      "Table 3.6.8.e - WESTERN BALTIC SPRING SPAWNING HERRING. Multi fleet. Survey indices: IBTS Q3 + BITS Q4 (number in 1000)"
+    ),
+    style = "Table Caption"
+  ) %>%
+  colformat_num(big.mark = "", na_str = "-")
+
+t
+```
+
