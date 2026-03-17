@@ -19,7 +19,7 @@ output:
 # devtools::install_github("fishfollower/SAM/stockassessment", ref="multi")
 
 path_root <-
-  "C:/Users/kibi/OneDrive - Danmarks Tekniske Universitet/stock_coord_work/her.27.20-24/2025_her.27.20-24_RDBES_combined/"
+  "C:/Users/kibi/OneDrive - Danmarks Tekniske Universitet/stock_coord_work/her.27.20-24/2026_her.27.20-24_RDBES_combined/"
 
 # path_root <-
 #   "Q:/mynd/kibi/SC_work/her.27.20-24/2024_her.27.20-24_RDBES_combined/"
@@ -395,7 +395,7 @@ t
 
 ```{r, echo=F}
 survey<-read.ices(paste(dir_dat,"survey.dat", sep=""))
-dat <- survey$GerAS 
+dat <- survey$GERAS 
 dat_1 <- data.table(dat, keep.rownames = " ")
 
 t <- flextable(dat_1) %>%
@@ -442,7 +442,7 @@ t
 
 ```{r, echo=F}
 survey <- read.ices(paste(dir_dat, "survey.dat", sep = ""))
-dat <- survey$`IBTS + BITS Q1`
+dat <- survey$`IBTS/BITS Q1`
 dat_1 <- data.table(dat, keep.rownames = " ")
 
 t <- flextable(dat_1) %>%
@@ -463,7 +463,9 @@ t <- flextable(dat_1) %>%
 t
 ```
 
-```{r, echo=F}
+```{r, echo=F, eval = F}
+
+# After the benchmark in 2025 this survey is not used anymore
 survey <- read.ices(paste(dir_dat, "survey.dat", sep = ""))
 dat <- survey$`IBTS Q3 + BITS Q4`
 dat_1 <- data.table(dat, keep.rownames = " ")
