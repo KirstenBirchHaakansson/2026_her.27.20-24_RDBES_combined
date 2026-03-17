@@ -3,7 +3,7 @@
 
 library(stockassessment)
 
-SAOAssessment <- "WBSS_HAWG_2025_sf"   # = stock name in stockassesssment.org
+SAOAssessment <- "WBSS_HAWG_2026"   # = stock name in stockassesssment.org
 user <- 278                            # User 2 = Anders; User 3 = Guest (ALWAYS GETS THE LATEST COMMITTED VERSION)
 
 ### Read raw data from stockassessment.org
