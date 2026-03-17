@@ -125,20 +125,20 @@ draft.data(data.files = "split_data",
 # #            title = "Data from Tomas",
 # #            file = T,
 # #            append = T)
-# 
-# draft.data(data.files = NULL,
-#            data.scripts = "download_from_stockassessment_org_single_fleet.R",
-#            originator = "stockassessment.org",
-#            title = "Single fleet data from stockassessment.org",
-#            file = T,
-#            append = T)
-# 
-# draft.data(data.files = NULL,
-#            data.scripts = "download_from_stockassessment_org_multi_fleet.R",
-#            originator = "stockassessment.org",
-#            title = "Multi fleet data from stockassessment.org",
-#            file = T,
-#            append = T)
+
+draft.data(data.files = NULL,
+           data.scripts = "download_from_stockassessment_org_single_fleet.R",
+           originator = "stockassessment.org",
+           title = "Single fleet data from stockassessment.org",
+           file = T,
+           append = T)
+
+draft.data(data.files = NULL,
+           data.scripts = "download_from_stockassessment_org_multi_fleet.R",
+           originator = "stockassessment.org",
+           title = "Multi fleet data from stockassessment.org",
+           file = T,
+           append = T)
 
 # draft.data(data.files = "Herring_TAC_catches_by_area.csv",
 #            data.scripts = NULL,
