@@ -590,8 +590,8 @@ class = 'cell-border stripe')
 
 ```{r, echo = F, include = F}
 
+dat_imputed$wr[dat_imputed$wr == "8+"] <- 8
 dat_imputed$wr_org <- as.numeric(dat_imputed$wr)
-dat_imputed$wr_org[dat_imputed$wr == "8+"] <- 8
 
 dat_imputed$wr_action <- stringr::str_extract(dat_imputed$level_used, "[:graph:]+$")
 
@@ -680,10 +680,10 @@ dat_imputed <- subset(dat_imputed, wr != -1)
 
 dat_imputed_sum <- summarise(group_by(dat_imputed, ctry, year, area, fleet, subFleet, 
                                       quarter, sppName, wr, noSample, noLength,
-                                      noAge, level, level_used),
-                             canum_1000 = sum(canum_1000, na.rm = T),
-                             wega_g = sum(canum_1000 * weca_g, na.rm = T) / sum(canum_1000, na.rm = T))
-dat_imputed_sum$catch_t <- dat_imputed_sum$canum_1000 * dat_imputed_sum$wega_g
+                                      noAge, level, level_used, catch_t),
+                                      weca_g = sum(canum_1000 * weca_g, na.rm = T) / sum(canum_1000, na.rm = T),
+                             canum_1000 = sum(canum_1000, na.rm = T))
+# dat_imputed_sum$catch_t <- dat_imputed_sum$canum_1000 * dat_imputed_sum$wega_g
 
 ```
 
@@ -709,16 +709,16 @@ nrow(wr_9)
 ## Combine
 
 ```{r}
-dat_done <- bind_rows(dat_with_bio, dat_imputed)
+dat_done <- bind_rows(dat_with_bio, dat_imputed_sum)
 ```
 
 # CATON check
 
 ```{r}
-caton_start <- distinct(dat, ctry, year, area, fleet, subFleet, 
+caton_start <- distinct(dat, ctry, year, quarter, area, fleet, subFleet, 
                                       quarter, catch_t)
 
-caton_end <- distinct(dat_done, ctry, year, area, fleet, subFleet, 
+caton_end <- distinct(dat_done, ctry, year, quarter, area, fleet, subFleet, 
                                       quarter, catch_t)
 
 caton_start_sum <- summarise(group_by(caton_start, year, fleet),
@@ -739,15 +739,15 @@ kable(caton)
 
 ```{r}
 
-sop <- summarise(group_by(dat_imputed, ctry, sppName, year, area, 
+sop <- summarise(group_by(dat_imputed_sum, ctry, sppName, year, area, 
               quarter, fleet, subFleet, catch_t),
               sop = sum((canum_1000 * weca_g) / 1000, na.rm = T))
 
 
-dat_imputed_sop <- left_join(select(dat_imputed, -sop), sop)
+dat_imputed_sop <- left_join(select(dat_imputed_sum), sop)
 dat_imputed_sop$sopCorr <- (dat_imputed_sop$catch_t / dat_imputed_sop$sop)
 
-nrow(subset(dat_imputed, sopCorr != 1))
+nrow(subset(dat_imputed_sop, sopCorr != 1))
 
 ```
 
@@ -770,6 +770,6 @@ dat_split_sum$weca_kg <- dat_split_sum$weca_g / 1000
 dat_split_sum$canumNew_1000000 <- dat_split_sum$canumNew_1000 / 1000
 
 
-write.table(dat_split_sum, paste0("../data/11_her2024_canum_with_imputations_for_split", year_impute,".csv"), row.names = F, sep = ";")
+write.table(dat_split_sum, paste0("../data/11_her2024_canum_with_imputations_for_split_", year_impute,".csv"), row.names = F, sep = ";")
 
 ```
