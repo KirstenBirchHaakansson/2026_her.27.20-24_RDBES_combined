@@ -3,16 +3,20 @@
 library(dplyr)
 library(knitr)
 
-year_to_update <- c(2024) # only works with a single year
-year_last <- 2023 #The end year of the time series to update
+year_to_update <- c(2000:2025) # only works with a single year
+year_last <- 2024 #The end year of the time series to update
+year_new_last <- 2025
 
 # Old data ----
 
-dat_old <- read.csv(paste0("boot/data/time_series/", "catch_no_sop_year_ctry_1989_", year_last, ".csv"))
+dat_old <- read.csv(paste0("boot/data/data_from_last_year/", "catch_no_sop_year_ctry_1989_", year_last, ".csv"))
 
 names(dat_old)
 
+unique(dat_old$year)
+
 dat_old_1 <- subset(dat_old, !(year %in% year_to_update))
+unique(dat_old_1$year)
 
 dat_old_remove <- subset(dat_old, (year %in% year_to_update))
 
@@ -26,7 +30,7 @@ kable(summarise(group_by(dat_old_remove, year), catch_1000t = sum(catch_1000t, n
 # New data ----
 
 
-dat_new <- read.csv(paste0("data/", "C1_her2024_canum_without_imputations_", year_to_update, ".csv"))
+dat_new <- read.csv(paste0("data/", "C2_her2024_canum_without_imputations_2000_2025.csv"), sep = ";")
 names(dat_new)
 unique(dat_new$wr)
 
@@ -67,7 +71,7 @@ kable(summarise(group_by(done, year), catch_1000t = sum(catch_1000t, na.rm = T))
                 caption = "New time series")
 
 
-write.csv(done, paste0("output/", "catch_no_sop_year_ctry_1989_", year_to_update, ".csv"), row.names = F)
+write.csv(done, paste0("output/", "catch_no_sop_year_ctry_1989_", year_new_last, ".csv"), row.names = F)
 
 
 
