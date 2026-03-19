@@ -112,6 +112,13 @@ draft.data(data.files = "split_data",
            file = T,
            append = T)
 
+draft.data(data.files = "data_from_last_year",
+           data.scripts = NULL,
+           originator = "Results needed for the split",
+           title = "Split data",
+           file = T,
+           append = T)
+
 # draft.data(data.files = "time_series",
 #            data.scripts = NULL,
 #            originator = "Former HAWGs",
