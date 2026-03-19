@@ -18,6 +18,8 @@ new <- readRDS(paste(
   "C1_her2024_canum_without_imputations_", year_end, ".rds",
   sep = ""
 ))
+
+sum(new$catch_t)/9
   
 # Fix fleet and subFleet in old time series ----
 # Code from BM - 
@@ -111,3 +113,9 @@ write.table(
   row.names = F,
   na = ""
 )
+
+
+# Summarise
+
+sum_year <- summarise(group_by(canum, year), t = sum(catch_t/9))
+knitr::kable(sum_year)
