@@ -132,6 +132,7 @@ t
 
 ```{r, echo=F}
 dat <- read.ices(paste(dir_dat_single, "nm.dat", sep = ""))
+dat <- format(dat, digits = 3)
 
 dat_1 <- data.table(dat, keep.rownames = " ")
 
@@ -179,6 +180,7 @@ t
 
 ```{r, echo=F}
 dat <- read.ices(paste(dir_dat_single, "pf.dat", sep = ""))
+dat <- format(dat, digits = 3)
 dat_1 <- data.table(dat, keep.rownames = " ")
 
 t <- flextable(dat_1) %>%
