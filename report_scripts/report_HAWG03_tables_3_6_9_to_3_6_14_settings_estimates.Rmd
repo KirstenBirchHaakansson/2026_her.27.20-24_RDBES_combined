@@ -6,7 +6,7 @@ output:
 
 ```{r info, include=F}
 
-#This script reads in data and tables directly from www.stockassessment.org
+#This script reads in data downloaded to /boot/data - scripts are at /boot
 
 #Remember to save the reference docx for styles the same place at the rmd script - input_tables_SAM_word_style.docx
 
@@ -21,7 +21,7 @@ output:
 #   "C:/Users/kibi/OneDrive - Danmarks Tekniske Universitet/SC_work/her.27.20-24/2024_her.27.20-24_RDBES_combined/"
 
 path_root <-
-  "C:/Users/kibi/OneDrive - Danmarks Tekniske Universitet/stock_coord_work/her.27.20-24/2025_her.27.20-24_RDBES_combined/"
+  "C:/Users/kibi/OneDrive - Danmarks Tekniske Universitet/stock_coord_work/her.27.20-24/2026_her.27.20-24_RDBES_combined/"
 
 knitr::opts_knit$set(root.dir = path_root)
 
@@ -34,15 +34,15 @@ library(rvest)
 
 options(scipen = 999, digits = 1)
 
-name <- "WBSS_HAWG_2025"
+name <- "WBSS_HAWG_2026"
 
-load(paste0(path_root, "boot/data/download_from_stockassessment_org_multi_fleet/model.RData"))
+load(paste0(path_root, "boot/data/download_from_stockassessment_org_single_fleet/model.RData"))
 
 #Multi fleet
 dir_dat <-
-  "https://www.stockassessment.org/datadisk/stockassessment/userdirs/user278/WBSS_HAWG_2025/data/" #input data directly from www.stockassessment.org
+  "https://www.stockassessment.org/datadisk/stockassessment/userdirs/user278/WBSS_HAWG_2026/data/" #input data directly from www.stockassessment.org
 dir_fig <-
-  "https://www.stockassessment.org/datadisk/stockassessment/userdirs/user278/WBSS_HAWG_2025/res/" #tables directly from www.stockassessment.org
+  "https://www.stockassessment.org/datadisk/stockassessment/userdirs/user278/WBSS_HAWG_2026/res/" #tables directly from www.stockassessment.org
 fig_prefix <-
   "xxx-00-00.00.00_" #Prefix for figures at www.stockassessment.org
 
@@ -80,7 +80,7 @@ t <- flextable(dat) %>%
   border_inner_h(part = "all") %>%
   set_caption(
     caption = paste0(
-      "Table 3.6.9 - WESTERN BALTIC SPRING SPAWNING HERRING. Multi fleet. SAM software version"
+      "Table 3.6.9 - WESTERN BALTIC SPRING SPAWNING HERRING. Single fleet. SAM software version"
     ),
     style = "Table Caption"
   ) %>%
@@ -108,7 +108,7 @@ t <- flextable(dat) %>%
   border_inner_h(part = "all") %>%
   set_caption(
     caption = paste0(
-      "Table 3.6.10 - WESTERN BALTIC SPRING SPAWNING HERRING. Multi fleet. SAM configuration settings"
+      "Table 3.6.10 - WESTERN BALTIC SPRING SPAWNING HERRING. Single fleet. SAM configuration settings"
     ),
     style = "Table Caption"
   ) %>%
@@ -140,7 +140,7 @@ t <- flextable(dat_1) %>%
   border_inner_h(part = "all") %>%
   set_caption(
     caption = paste0(
-      "Table 3.6.11 - WESTERN BALTIC SPRING SPAWNING HERRING. Multi fleet. Stock summary - Estimated recruitment (1000), spawning stock biomass (SSB) (tons), average fishing mortality and total stock biomass (TSB) (tons)"
+      "Table 3.6.11 - WESTERN BALTIC SPRING SPAWNING HERRING. Single fleet. Stock summary - Estimated recruitment (1000), spawning stock biomass (SSB) (tons), average fishing mortality and total stock biomass (TSB) (tons)"
     ),
     style = "Table Caption"
   ) %>%
@@ -170,7 +170,7 @@ t <- flextable(dat_1) %>%
   border_inner_h(part = "all") %>%
   set_caption(
     caption = paste0(
-      "Table 3.6.12.a - WESTERN BALTIC SPRING SPAWNING HERRING. Multi fleet. Estimated fishing mortality per year and age as W-ringers. Sum all fleets"
+      "Table 3.6.12 - WESTERN BALTIC SPRING SPAWNING HERRING. Single fleet. Estimated fishing mortality per year and age as W-ringers"
     ),
     style = "Table Caption"
   ) %>%
@@ -178,124 +178,6 @@ t <- flextable(dat_1) %>%
 
 t
 
-```
-
-```{r, echo=F, warning=F}
-
-t3613 <-
-  as.data.frame(read_html(paste(dir_fig, fig_prefix, "tab2a.html", sep =
-                                  "")) %>% html_table(fill = TRUE))
-
-t3613 <- t3613[c(3:nrow(t3613)), ]
-
-dat_1 <- t3613[-1,]
-
-names(dat_1) <- c(" ", "0", "1", "2", "3", "4", "5", "6", "7", "8")
-
-t <- flextable(dat_1) %>%
-  set_table_properties(width = 1, layout = "autofit") %>%
-  bold(part = "header") %>%
-  padding(padding.bottom = 0, part = "all") %>%
-  padding(padding.top = 0, part = "all") %>%
-  bg(bg = "#B7D1C3", part = "header") %>%
-  border_inner_h(part = "all") %>%
-  set_caption(
-    caption = paste0(
-      "Table 3.6.12.b - WESTERN BALTIC SPRING SPAWNING HERRING. Multi fleet. Estimated fishing mortality per year and age as W-ringers. Fleet A"
-    ),
-    style = "Table Caption"
-  ) %>%
-  colformat_num(big.mark = "", na_str = "-")
-
-t
-```
-
-```{r, echo=F, warning=F}
-t3613 <-
-  as.data.frame(read_html(paste(dir_fig, fig_prefix, "tab2c.html", sep =
-                                  "")) %>% html_table(fill = TRUE))
-
-t3613 <- t3613[c(3:nrow(t3613)), ]
-
-dat_1 <- t3613[-1, ]
-
-names(dat_1) <- c(" ", "0", "1", "2", "3", "4", "5", "6", "7", "8")
-
-t <- flextable(dat_1) %>%
-  set_table_properties(width = 1, layout = "autofit") %>%
-  bold(part = "header") %>%
-  padding(padding.bottom = 0, part = "all") %>%
-  padding(padding.top = 0, part = "all") %>%
-  bg(bg = "#B7D1C3", part = "header") %>%
-  border_inner_h(part = "all") %>%
-  set_caption(
-    caption = paste0(
-      "Table 3.6.12.c - WESTERN BALTIC SPRING SPAWNING HERRING. Multi fleet. Estimated fishing mortality per year and age as W-ringers. Fleet C"
-    ),
-    style = "Table Caption"
-  ) %>%
-  colformat_num(big.mark = "", na_str = "-")
-
-t
-```
-
-```{r, echo=F, warning=F}
-t3613 <-
-  as.data.frame(read_html(paste(dir_fig, fig_prefix, "tab2d.html", sep =
-                                  "")) %>% html_table(fill = TRUE))
-
-t3613 <- t3613[c(3:nrow(t3613)), ]
-
-
-dat_1 <- t3613[-1,]
-
-names(dat_1) <- c(" ", "0", "1", "2", "3", "4", "5", "6", "7", "8")
-
-t <- flextable(dat_1) %>%
-  set_table_properties(width = 1, layout = "autofit") %>%
-  bold(part = "header") %>%
-  padding(padding.bottom = 0, part = "all") %>%
-  padding(padding.top = 0, part = "all") %>%
-  bg(bg = "#B7D1C3", part = "header") %>%
-  border_inner_h(part = "all") %>%
-  set_caption(
-    caption = paste0(
-      "Table 3.6.12.d - WESTERN BALTIC SPRING SPAWNING HERRING. Multi fleet. Estimated fishing mortality per year and age as W-ringers. Fleet D"
-    ),
-    style = "Table Caption"
-  ) %>%
-  colformat_num(big.mark = "", na_str = "-")
-
-t
-```
-
-```{r, echo=F, warning=F}
-t3613 <-
-  as.data.frame(read_html(paste(dir_fig, fig_prefix, "tab2f.html", sep =
-                                  "")) %>% html_table(fill = TRUE))
-
-t3613 <- t3613[c(3:nrow(t3613)), ]
-
-dat_1 <- t3613[-1, ]
-
-names(dat_1) <- c(" ", "0", "1", "2", "3", "4", "5", "6", "7", "8")
-
-t <- flextable(dat_1) %>%
-  set_table_properties(width = 1, layout = "autofit") %>%
-  bold(part = "header") %>%
-  padding(padding.bottom = 0, part = "all") %>%
-  padding(padding.top = 0, part = "all") %>%
-  bg(bg = "#B7D1C3", part = "header") %>%
-  border_inner_h(part = "all") %>%
-  set_caption(
-    caption = paste0(
-      "Table 3.6.12.e - WESTERN BALTIC SPRING SPAWNING HERRING. Multi fleet. Estimated fishing mortality per year and age as W-ringers. Fleet F"
-    ),
-    style = "Table Caption"
-  ) %>%
-  colformat_num(big.mark = "", na_str = "-")
-
-t
 ```
 
 ```{r, echo=F, warning=F}
@@ -316,7 +198,7 @@ t <- flextable(dat_1) %>%
   border_inner_h(part = "all") %>%
   set_caption(
     caption = paste0(
-      "Table 3.6.13 - WESTERN BALTIC SPRING SPAWNING HERRING. Multi fleet. Estimated stock numbers (1000) per year and age as W-ringers"
+      "Table 3.6.13 - WESTERN BALTIC SPRING SPAWNING HERRING. Single fleet. Estimated stock numbers (1000) per year and age as W-ringers"
     ),
     style = "Table Caption"
   ) %>%
@@ -325,13 +207,8 @@ t <- flextable(dat_1) %>%
 t
 ```
 
-```{r}
-a <- round(caytable(fit, fleet = 1), digits = 2)
-c <- round(caytable(fit, fleet = 2), digits = 2)
-d <- round(caytable(fit, fleet = 3), digits = 2)
-f <- round(caytable(fit, fleet = 4), digits = 2)
-
-all <- a + c + d + f
+```{r, eval = F}
+all <- round(caytable(fit, fleet = 1), digits = 2)
 all <- format(all, digits = 2, nsmall = 2)
 
 dat_1 <- data.table(all, keep.rownames = " ")
@@ -345,7 +222,7 @@ t <- flextable(dat_1) %>%
   border_inner_h(part = "all") %>%
   set_caption(
     caption = paste0(
-      "Table 3.6.14.a - WESTERN BALTIC SPRING SPAWNING HERRING. Multi fleet. Predicted catch in numbers (1000) per year and age as W-ringers. Sum fleets"
+      "Table 3.6.14 - WESTERN BALTIC SPRING SPAWNING HERRING. Single fleet. Predicted catch in numbers (1000) per year and age as W-ringers"
     ),
     style = "Table Caption"
   ) %>%
@@ -353,100 +230,4 @@ t <- flextable(dat_1) %>%
 
 t
 
-```
-
-```{r}
-a <- round(caytable(fit, fleet = 1), digits = 2)
-a <- format(a, digits = 2, nsmall = 2)
-
-dat_1 <- data.table(a, keep.rownames = " ")
-
-t <- flextable(dat_1) %>%
-  set_table_properties(width = 1, layout = "autofit") %>%
-  bold(part = "header") %>%
-  padding(padding.bottom = 0, part = "all") %>%
-  padding(padding.top = 0, part = "all") %>%
-  bg(bg = "#B7D1C3", part = "header") %>%
-  border_inner_h(part = "all") %>%
-  set_caption(
-    caption = paste0(
-      "Table 3.6.14.b - WESTERN BALTIC SPRING SPAWNING HERRING. Multi fleet. Predicted catch in numbers (1000) per year and age as W-ringers. Fleet A"
-    ),
-    style = "Table Caption"
-  ) %>%
-  colformat_num(big.mark = "", na_str = "-")
-
-t
-
-```
-
-```{r}
-c <- round(caytable(fit, fleet = 2), digits = 2)
-c <- format(c, digits = 2, nsmall = 2)
-
-dat_1 <- data.table(c, keep.rownames = " ")
-
-t <- flextable(dat_1) %>%
-  set_table_properties(width = 1, layout = "autofit") %>%
-  bold(part = "header") %>%
-  padding(padding.bottom = 0, part = "all") %>%
-  padding(padding.top = 0, part = "all") %>%
-  bg(bg = "#B7D1C3", part = "header") %>%
-  border_inner_h(part = "all") %>%
-  set_caption(
-    caption = paste0(
-      "Table 3.6.14.c - WESTERN BALTIC SPRING SPAWNING HERRING. Multi fleet. Predicted catch in numbers (1000) per year and age as W-ringers. Fleet C"
-    ),
-    style = "Table Caption"
-  ) %>%
-  colformat_num(big.mark = "", na_str = "-")
-
-t
-```
-
-```{r}
-d <- round(caytable(fit, fleet = 3), digits = 2)
-d <- format(d, digits = 2, nsmall = 2)
-dat_1 <- data.table(d, keep.rownames = " ")
-
-t <- flextable(dat_1) %>%
-  set_table_properties(width = 1, layout = "autofit") %>%
-  bold(part = "header") %>%
-  padding(padding.bottom = 0, part = "all") %>%
-  padding(padding.top = 0, part = "all") %>%
-  bg(bg = "#B7D1C3", part = "header") %>%
-  border_inner_h(part = "all") %>%
-  set_caption(
-    caption = paste0(
-      "Table 3.6.14.d - WESTERN BALTIC SPRING SPAWNING HERRING. Multi fleet. Predicted catch in numbers (1000) per year and age as W-ringers. Fleet D"
-    ),
-    style = "Table Caption"
-  ) %>%
-  colformat_num(big.mark = "", na_str = "-")
-
-t
-```
-
-```{r}
-
-f <- round(caytable(fit, fleet = 4), digits = 2)
-f <- format(f, digits = 2, nsmall = 2)
-dat_1 <- data.table(d, keep.rownames = " ")
-
-t <- flextable(dat_1) %>%
-  set_table_properties(width = 1, layout = "autofit") %>%
-  bold(part = "header") %>%
-  padding(padding.bottom = 0, part = "all") %>%
-  padding(padding.top = 0, part = "all") %>%
-  bg(bg = "#B7D1C3", part = "header") %>%
-  border_inner_h(part = "all") %>%
-  set_caption(
-    caption = paste0(
-      "Table 3.6.14.e - WESTERN BALTIC SPRING SPAWNING HERRING. Multi fleet. Predicted catch in numbers (1000) per year and age as W-ringers. Fleet F"
-    ),
-    style = "Table Caption"
-  ) %>%
-  colformat_num(big.mark = "", na_str = "-")
-
-t
 ```
