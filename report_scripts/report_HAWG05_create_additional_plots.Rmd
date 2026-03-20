@@ -1,0 +1,297 @@
+---
+title: "WBSS - reprot - additional plots"
+author: "Kirsten Birch Håkansson"
+date: \today
+output: pdf_document
+---
+
+This script makes additional plot for the WBSS report
+
+```{r setup, include=FALSE}
+
+# path_root <-
+#   "C:/Users/kibi/OneDrive - Danmarks Tekniske Universitet/SC_work/her.27.20-24/2024_her.27.20-24_RDBES_combined/"
+
+# path_root <-
+#   "Q:/mynd/kibi/SC_work/her.27.20-24/2024_her.27.20-24_RDBES_combined/"
+
+knitr::opts_knit$set(root.dir = "../report_scripts")
+
+library(dplyr)
+library(ggplot2)
+library(tidyr)
+library(knitr)
+library(RColorBrewer)
+require(gridExtra)
+library(stockassessment)
+library(reshape2)
+library(viridis)
+library(stringr)
+
+opts_chunk$set(tidy.opts = list(width.cutoff = 80), tidy = TRUE)
+options(scripen = 9999, digits = 10)
+
+#dir_data<-"C:/HAWG/2018/WBSS/report/user278-WBSS_HAWG_2018/WBSS_HAWG_2018/"
+dir_data_input <- "https://www.stockassessment.org/datadisk/stockassessment/userdirs/user278/WBSS_HAWG_2025/data/" #input data directly from www.stockassessment.org
+
+# output_path <- "report_script"
+
+source("../report_scripts/ggplot_AgeDistStk.R")
+
+load("../boot/data/download_from_stockassessment_org_multi_fleet/model.RData")
+
+ catch.dat <- read.csv("../boot/data/tac_catchs_table_for_fig/Herring_TAC_catches_by_area.csv", sep = ";")
+
+
+knitr::opts_chunk$set(
+  fig.width = 6,
+  fig.height = 6,
+  fig.path = "plot_",
+  dpi = 600,
+  dev = 'png',
+  echo = F,
+  warning = F
+)
+
+```
+
+```{r GerAS N20, eval = T}
+#Not that nice code - sorry
+sur<-read.ices(paste(dir_data_input,"survey.dat", sep=""))
+
+n20<-data.frame(sur$N20)
+n20$year<-as.numeric(rownames(n20))
+n20$X0 <- n20$X0/1000
+
+geras<-round(select(data.frame(sur$GerAS), X1)/1000, digits = 2)
+geras$year<-as.numeric(rownames(geras))
+geras$year<-geras$year-1
+
+com<-left_join(n20, geras)
+
+lm_eqn <- function(df, x, y){
+    m <- lm(y ~ x, df);
+    eq <- substitute(italic(y) == a + b~italic(x)*","~~italic(r)^2~"="~r2, 
+         list(a = format(unique(coef(m)[1]), digits = 2), 
+              b = format(unique(coef(m)[2]), digits = 2), 
+             r2 = format(summary(m)$r.squared, digits = 4)))
+    as.character(as.expression(eq));                 
+}
+
+ggplot(com, aes(x=X0, y=X1, label=substr(year,3,4))) +
+  geom_text(size = 3, col="#313695") + 
+  geom_smooth(method='lm',formula=y~x, se = FALSE, col=viridis(1, begin=0.5, option="D")) +
+  geom_text(x = 15000, y = 500, label = lm_eqn(com, x=com$X0, y=com$X1), parse = TRUE) +
+  labs(x="N20 wr 0 (millions), year", y="GerAS wr 1 (millions), year-1")
+
+```
+
+
+## Weight at age in catch
+```{r weigth at age catch}
+cw<-round(read.ices(paste(dir_data_input,"cw.dat", sep="")), digits=4)
+cw2<-melt(cw, id="year")
+colnames(cw2)<-c("year","wr","weca")
+
+ggplot(cw2, aes(year, weca, colour=as.character(wr)))+
+  geom_line(linewidth=1) +
+  geom_point(size=2) +
+  scale_colour_manual(values = viridis(9, option="D"), name = "wr") +
+  labs(title = "Mean weight at age in catch", y ="WECA (kg)") + guides(colour = guide_legend(reverse=T))
+```
+
+## Weight at age in stock
+```{r weigth at age stock}
+sw<-round(read.ices(paste(dir_data_input,"sw.dat", sep="")), digits=4)
+sw2<-melt(sw, id="year")
+colnames(sw2)<-c("year","wr","weca")
+
+ggplot(sw2, aes(year, weca, colour=as.character(wr)))+
+  geom_line(linewidth=1) +
+  geom_point(size=2) +
+  scale_colour_manual(values =  viridis(9, option="D"), name = "wr") +
+  labs(title = "Mean weight at age in stock", y ="WECA (kg)") + guides(colour = guide_legend(reverse=T))
+```
+
+## F at age in catch
+```{r f at age, eval = T}
+f1 <- faytable(fit,fleet=1)
+f2 <- faytable(fit,fleet=2)
+f3 <- faytable(fit,fleet=3)
+f4 <- faytable(fit,fleet=4)
+
+fc<-f1+f2+f3+f4
+
+fc1<-melt(fc, id="year")
+colnames(fc1)<-c("year","wr","f")
+
+ggplot(fc1, aes(year, f, colour=as.character(wr)))+
+  geom_line(linewidth=1) +
+  geom_point(size=2) +
+  scale_colour_manual(values =  viridis(9, option="D"), name = "wr") +
+  labs(y ="f") + guides(colour = guide_legend(reverse=T))
+```
+
+
+```{r catch number by age, fig.height=7, fig.width=6}
+cn<-round(read.ices(paste(dir_data_input,"cn.dat", sep="")), digits=4)
+cn2<-melt(cn, id="year")
+colnames(cn2)<-c("year","wr","n")
+
+cn2$n<-cn2$n/1000
+n.year<-summarise(group_by(cn2, year), n.year=sum(n))
+cn3<-left_join(cn2, n.year)
+cn3$prop<-cn3$n/cn3$n.year
+cn4<-select(cn3, -n.year)
+
+cn5<-melt(cn4, id=c("year","wr"))
+cn5<-arrange(cn5, - wr)
+cn5$wr<-as.factor(cn5$wr)
+cn5$wr <- factor(cn5$wr, levels = rev(levels(cn5$wr)))
+levels(cn5$variable) <- c("Number (millions)", "Proportion")
+
+ggplot(cn5, aes(year, value, fill=wr)) +
+  geom_area(position = 'stack') +
+  facet_grid(variable~., scales="free_y") +
+  scale_fill_manual(values =  rev(viridis(9, option="D")), name = "wr") +
+  labs(title = "Catch in numbers", y = "") + guides(colour = guide_legend(reverse=T))
+
+```
+
+```{r catch weigth by age, fig.height=7, fig.width=6}
+cn<-round(read.ices(paste(dir_data_input,"cn.dat", sep="")), digits=4)
+cw<-round(read.ices(paste(dir_data_input,"cw.dat", sep="")), digits=4)
+w<-cn*cw
+w2<-melt(w, id="year")
+colnames(w2)<-c("year","wr","w")
+
+w2$w<-w2$w/1000
+w.year<-summarise(group_by(w2, year), w.year=sum(w))
+w3<-left_join(w2, w.year)
+w3$prop<-w3$w/w3$w.year
+w4<-select(w3, -w.year)
+
+w5<-melt(w4, id=c("year","wr"))
+w5<-arrange(w5, - wr)
+w5$wr<-as.factor(w5$wr)
+w5$wr <- factor(w5$wr, levels = rev(levels(w5$wr)))
+levels(w5$variable) <- c("Weight (1000 tons)", "Proportion")
+
+ggplot(w5, aes(year, value, fill=wr)) +
+  geom_area(position = 'stack') +
+  facet_grid(variable~., scales="free_y") +
+  scale_fill_manual(values =  rev(viridis(9, option="D")), name = "wr") +
+  labs(title = "Catch in weight", y = "")
+
+```
+
+
+## Selection commercial per fleet
+
+```{r Selection commercial per fleet, eval = T}
+fleets <- attr(fit$data,"fleetNames")[1:4]<-paste0("Fleet ", c("A","C","D","F"))
+
+faa <- NULL
+for(i in 1:4){
+tmp <- faytable(fit,fleet=i)
+tmp <- data.frame(year=as.numeric(rownames(tmp)),tmp)
+tmp <- tmp %>% gather("age","val",-1) %>% mutate(age=substring(age,2,3))
+tmp$grp <- cut(tmp$year,breaks=(6), include.lowest=T, right=T)
+tmp$fleet <- fleets[i]
+faa <- rbind(faa,tmp)
+}
+
+grp<-distinct(faa, grp, year)
+grp$value<-1
+grp$csum <- ave(grp$value, grp$grp, FUN=cumsum)
+
+faa<-merge(faa, grp)
+
+ggplot(faa, aes(age,val,group=year)) + geom_line(aes(colour = csum)) + facet_grid(fleet~grp, scales="free_y") + labs(y="Catchability", x="wr") + scale_colour_gradientn(colours = viridis(7), name="Order")
+```
+
+```{r Selection commercial per fleet 2020 2024, eval = F}
+fleets <- attr(fit$data,"fleetNames")[1:4]<-paste0("Fleet ", c("A","C","D","F"))
+
+faa <- NULL
+for(i in 1:4){
+tmp <- faytable(fit,fleet=i)
+tmp <- data.frame(year=as.numeric(rownames(tmp)),tmp)
+tmp <- tmp %>% gather("age","val",-1) %>% mutate(age=substring(age,2,3))
+tmp$grp <- cut(tmp$year,breaks=(5), include.lowest=T, right=T)
+tmp$fleet <- fleets[i]
+faa <- rbind(faa,tmp)
+}
+
+grp<-distinct(faa, grp, year)
+grp$value<-1
+grp$csum <- ave(grp$value, grp$grp, FUN=cumsum)
+
+faa<-merge(faa, grp)
+
+faa_1 <- subset(faa, year >= 2018)
+
+ggplot(faa_1, aes(age,val,group=year)) + geom_line(aes(colour = csum)) + facet_grid(fleet~grp, scales="free_y") + labs(y="Catchability", x="wr") + scale_colour_gradientn(colours = viridis(7), name="Order")
+```
+
+## Estimated cohort
+
+```{r Estimated cohort, fig.height=7, eval = T}
+ggAgeDistStk2(fit)
+```
+
+# TAC and catch
+```{r, eval = T}
+
+png(filename = "report_scripts/TAC_catch.png", width = 18, height = 20, res = 300, units = "cm", pointsize = 15)
+
+#Catch and TAC
+
+catch.dat$data <- catch.dat$data/1000
+xlims <- range(pretty(catch.dat$year))
+par(mfrow=c(3,1),mar=c(0,0,1,0),oma=c(5,4,4,2))
+plot.dat <- subset(catch.dat,area=="Div. IIIa")
+IIIa.catches <- tapply(plot.dat[plot.dat$quantity=="Catch","data"],plot.dat[plot.dat$quantity=="Catch","year"],sum)
+IIIa.catches <- data.frame(year=as.numeric(names(IIIa.catches)),data=IIIa.catches)
+plot(0,0,pch=NA,xaxt="n",xlim=xlims,ylim=range(pretty(c(0,IIIa.catches$data))),ylab="Catch (kt)",xlab="",xpd=NA)
+grid()
+rect(IIIa.catches$year-0.5,0,IIIa.catches$year+0.5,IIIa.catches$data,col="lightgrey")
+plot.dat <- subset(catch.dat,area=="Div. IIIa"&stock=="WBSS")
+rect(plot.dat$year-0.5,0,plot.dat$year+0.5,plot.dat$data,col="darkgrey")
+IIIa.TACs <- subset(catch.dat, area=="Div. IIIa"&quantity=="TAC")
+plot.dat <- data.frame(year=rep(IIIa.TACs$year,each=2)+c(-0.5,0.5),TAC=rep(IIIa.TACs$data,each=2))
+lines(plot.dat,lwd=5)
+abline(v=2010.5, lty=2) # 50% transfer of 3A quota to NS was allowed more systematically for all countries since 2011
+legend("topright",legend=c("WBSS Catch in IIIa","NSAS Catch in IIIa","Div. IIIa TAC"),lwd=c(1,1,5),lty=c(NA,NA,1),pch=c(22,22,NA),
+col="black",pt.bg=c("darkgrey","lightgrey",NA),pt.cex=c(2),bg="white")
+axis(1,labels=FALSE)
+
+plot.dat <- subset(catch.dat,area=="Sub-div. 22-24" & quantity=="Catch")
+plot(0,0,pch=NA,xaxt="n",xlim=xlims,ylim=range(pretty(c(0,plot.dat$data))),ylab="Catch (kt)",xlab="",xpd=NA)
+grid()
+rect(plot.dat$year-0.5,0,plot.dat$year+0.5,plot.dat$data,col="darkgrey")
+sd22.TACs <- subset(catch.dat,area=="Sub-div. 22-24" & quantity=="TAC")
+plot.dat <- data.frame(year=rep(sd22.TACs$year,each=2)+c(-0.5,0.5),TAC=rep(sd22.TACs$data,each=2))
+lines(plot.dat,lwd=5)
+legend("topright",legend=c("WBSS Catch in SD. 22-24","SD. 22-24 TAC"),lwd=c(1,5),lty=c(NA,1),pch=c(22,NA),
+col="black",pt.bg=c("darkgrey",NA),pt.cex=c(2),bg="white")
+axis(1,labels=FALSE)
+
+plot.dat <- subset(catch.dat,quantity=="Catch" & stock=="WBSS")
+WBSS.catches <- tapply(plot.dat[plot.dat$quantity=="Catch","data"],plot.dat[plot.dat$quantity=="Catch","year"],sum)
+WBSS.catches <- data.frame(year=as.numeric(names(WBSS.catches)),data=WBSS.catches)
+plot(0,0,pch=NA,xaxt="n",xlim=xlims,ylim=range(pretty(c(0,WBSS.catches$data))),ylab="Catch (kt)",xlab="",xpd=NA)
+grid()
+rect(WBSS.catches$year-0.5,0,WBSS.catches$year+0.5,WBSS.catches$data,col="darkgrey")
+legend("topright",legend=c("Total WBSS Catch"),pch=c(22,NA),pt.bg=c("darkgrey"),pt.cex=c(2),bg="white")
+axis(1,labels=TRUE)
+
+## title(main=paste(wbss@name,"Catch and TAC"),outer=TRUE)
+title(xlab="Year",xpd=NA)
+
+dev.off()
+
+
+```
+
+
