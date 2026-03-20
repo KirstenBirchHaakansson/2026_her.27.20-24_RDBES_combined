@@ -40,9 +40,9 @@ load(paste0(path_root, "boot/data/download_from_stockassessment_org_single_fleet
 
 #Multi fleet
 dir_dat <-
-  "https://www.stockassessment.org/datadisk/stockassessment/userdirs/user278/WBSS_HAWG_2026/data/" #input data directly from www.stockassessment.org
+  "https://www.stockassessment.org/datadisk/stockassessment/userdirs/user295/WBSS_HAWG_2026/data/" #input data directly from www.stockassessment.org
 dir_fig <-
-  "https://www.stockassessment.org/datadisk/stockassessment/userdirs/user278/WBSS_HAWG_2026/res/" #tables directly from www.stockassessment.org
+  "https://www.stockassessment.org/datadisk/stockassessment/userdirs/user295/WBSS_HAWG_2026/res/" #tables directly from www.stockassessment.org
 fig_prefix <-
   "xxx-00-00.00.00_" #Prefix for figures at www.stockassessment.org
 
