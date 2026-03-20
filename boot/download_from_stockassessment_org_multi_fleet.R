@@ -4,7 +4,8 @@
 library(stockassessment)
 
 SAOAssessment <- "WBSS_HAWG_2026_mf"   # = stock name in stockassesssment.org
-user <- 278                            # User 2 = Anders; User 3 = Guest (ALWAYS GETS THE LATEST COMMITTED VERSION)
+user <- 295                           # User 2 = Anders; User 3 = Guest (ALWAYS GETS THE LATEST COMMITTED VERSION)
+                                      # user 295 = Vanessa, so use that one for HAWG
 
 ### Read raw data from stockassessment.org
 url <-
