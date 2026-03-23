@@ -10,7 +10,6 @@ output:
 
 #Remember to save the reference docx for styles the same place at the rmd script - input_tables_SAM_word_style.docx
 
-#To insure that each table starts on a new pages Page Break are inserted - these need to be deleted from the final document
 
 ```
 
@@ -19,7 +18,7 @@ output:
 # devtools::install_github("fishfollower/SAM/stockassessment", ref="multi")
 
 path_root <-
-  "C:/Users/kibi/OneDrive - Danmarks Tekniske Universitet/stock_coord_work/her.27.20-24/2025_her.27.20-24_RDBES_combined/"
+  "C:/Users/kibi/OneDrive - Danmarks Tekniske Universitet/stock_coord_work/her.27.20-24/2026_her.27.20-24_RDBES_combined/"
 
 knitr::opts_knit$set(root.dir = path_root)
 
@@ -34,9 +33,11 @@ library(flextable)
 
 options(scipen=999)
 
-#Multi fleet 
-dir_dat<-"https://www.stockassessment.org/datadisk/stockassessment/userdirs/user278/WBSS_HAWG_2025/data/" #input data directly from www.stockassessment.org
-dir_fig<-"https://www.stockassessment.org/datadisk/stockassessment/userdirs/user278/WBSS_HAWG_2025/res/" #tables directly from www.stockassessment.org
+# Single fleet
+dir_dat <-
+  "https://www.stockassessment.org/datadisk/stockassessment/userdirs/user295/WBSS_HAWG_2026/data/" #input data directly from www.stockassessment.org
+dir_fig <-
+  "https://www.stockassessment.org/datadisk/stockassessment/userdirs/user295/WBSS_HAWG_2026/res/" #tables directly from www.stockassessment.org
 fig_prefix<-"xxx-00-00.00.00_" #Prefix for figures at www.stockassessment.org
 
 panderOptions("table.style", "rmarkdown")
@@ -56,14 +57,14 @@ set_flextable_defaults(
 ```
 
 **TABLE 3.9.1 - WESTERN BALTIC SPRING SPAWNING HERRING**\
-*Multi fleet*\
+*Single fleet*\
 Input table for short term predictions
 
 Done by Vanessa
 
 ```{r, ft.align="left"}
 
-t37 <- as.data.frame(read_html(paste(dir_fig, fig_prefix, "tabX1a.html", sep="")) %>% html_table(fill=TRUE))
+t37 <- as.data.frame(read_html(paste(dir_fig, fig_prefix, "tabX1.html", sep="")) %>% html_table(fill=TRUE))
 
 t37 <- t37[c(3, 5:(nrow(t37)-1)),]
 
@@ -87,7 +88,7 @@ t <- flextable(t37.2) %>%
   border_inner_h(part = "all") %>%
   set_caption(
     caption = paste0(
-      "TABLE 3.9.2 - WESTERN BALTIC SPRING SPAWNING HERRING. Multi fleet. Forecast table. MSY approach (zero catch, F=0)"
+      "TABLE 3.9.2 - WESTERN BALTIC SPRING SPAWNING HERRING. Single fleet. Forecast table. ICES MSY approach: AR with F=0 below Blim"
     ),
     style = "Table Caption"
   ) %>%
@@ -98,43 +99,7 @@ t
 ```
 
 ```{r, ft.align="left"}
-t37 <- as.data.frame(read_html(paste(dir_fig, fig_prefix, "tabX1b.html", sep="")) %>% html_table(fill=TRUE))
-
-t37 <- t37[c(3, 5:(nrow(t37)-1)),]
-
-colnames(t37)<-unlist(t37[1, ], use.names = FALSE)
-
-t37.1<-t37[-1,]
-row.names(t37.1)<-NULL
-
-t37.2 <- t(t37.1[-1])
-colnames(t37.2) <- t37.1[, 1]
-
-rownames(t37.2) <- c("Fleet A", "Fleet C", "Fleet D", "Fleet F")
-
-t37.2 <- data.table(t37.2, keep.rownames = "fleet")
-
-t <- flextable(t37.2) %>%
-  set_table_properties(width = 1, layout = "autofit") %>%
-  bold(part = "header") %>%
-  padding(padding.bottom = 0, part = "all") %>%
-  padding(padding.top = 0, part = "all") %>%
-  bg(bg = "#B7D1C3", part = "header") %>%
-  border_inner_h(part = "all") %>%
-  set_caption(
-    caption = paste0(
-      "Catch per fleet"
-    ),
-    style = "Table Caption"
-  ) %>%
-  colformat_num(big.mark = "", na_str = "-")
-
-t
-
-```
-
-```{r, ft.align="left"}
-t37 <- as.data.frame(read_html(paste(dir_fig, fig_prefix, "tabX2a.html", sep="")) %>% html_table(fill=TRUE))
+t37 <- as.data.frame(read_html(paste(dir_fig, fig_prefix, "tabX2.html", sep="")) %>% html_table(fill=TRUE))
 
 t37 <- t37[c(3, 5:(nrow(t37)-1)),]
 
@@ -157,7 +122,7 @@ t <- flextable(t37.2) %>%
   border_inner_h(part = "all") %>%
   set_caption(
     caption = paste0(
-      "TABLE 3.9.3 - WESTERN BALTIC SPRING SPAWNING HERRING. Multi fleet. Forecast table. MAP 2018: F=FMSY(0.31)*SSBy-1/MSYBtrigger"
+      "TABLE 3.9.3 - WESTERN BALTIC SPRING SPAWNING HERRING. Single fleet. Forecast table. EU Baltic Sea multiannual plan (MAP): F=Fmsy*SSB2026/MSYBtrigger."
     ),
     style = "Table Caption"
   ) %>%
@@ -167,44 +132,7 @@ t
 ```
 
 ```{r, ft.align = "left"}
-t37 <- as.data.frame(read_html(paste(dir_fig, fig_prefix, "tabX2b.html", sep="")) %>% html_table(fill=TRUE))
-
-t37 <- t37[c(3, 5:(nrow(t37)-1)),]
-
-colnames(t37)<-unlist(t37[1, ], use.names = FALSE)
-
-t37.1<-t37[-1,]
-row.names(t37.1)<-NULL
-
-t37.2 <- t(t37.1[-1])
-colnames(t37.2) <- t37.1[, 1]
-
-rownames(t37.2) <- c("Fleet A", "Fleet C", "Fleet D", "Fleet F")
-
-t37.2 <- data.table(t37.2, keep.rownames = "fleet")
-
-t <- flextable(t37.2) %>%
-  set_table_properties(width = 1, layout = "autofit") %>%
-  bold(part = "header") %>%
-  padding(padding.bottom = 0, part = "all") %>%
-  padding(padding.top = 0, part = "all") %>%
-  bg(bg = "#B7D1C3", part = "header") %>%
-  border_inner_h(part = "all") %>%
-  set_caption(
-    caption = paste0(
-      "Catch per fleet"
-    ),
-    style = "Table Caption"
-  ) %>%
-  colformat_num(big.mark = "", na_str = "-")
-
-t
-```
-
-##### Page Break
-
-```{r, ft.align = "left"}
-t37 <- as.data.frame(read_html(paste(dir_fig, fig_prefix, "tabX3a.html", sep="")) %>% html_table(fill=TRUE))
+t37 <- as.data.frame(read_html(paste(dir_fig, fig_prefix, "tabX3.html", sep="")) %>% html_table(fill=TRUE))
 
 t37 <- t37[c(3, 5:(nrow(t37)-1)),]
 
@@ -228,7 +156,7 @@ t <- flextable(t37.2) %>%
   border_inner_h(part = "all") %>%
   set_caption(
     caption = paste0(
-      "TABLE 3.9.4 - WESTERN BALTIC SPRING SPAWNING HERRING. Multi fleet. Forecast table. MAP 2018: F=FMSYlower(0.216)*SSBy-1/MSYBtrigger"
+      "TABLE 3.9.4 - WESTERN BALTIC SPRING SPAWNING HERRING. Single fleet. Forecast table. F=FMSY=Fpa=0.05"
     ),
     style = "Table Caption"
   ) %>%
@@ -238,42 +166,7 @@ t
 ```
 
 ```{r, ft.align = "left"}
-t37 <- as.data.frame(read_html(paste(dir_fig, fig_prefix, "tabX3b.html", sep="")) %>% html_table(fill=TRUE))
-
-t37 <- t37[c(3, 5:(nrow(t37)-1)),]
-
-colnames(t37)<-unlist(t37[1, ], use.names = FALSE)
-
-t37.1<-t37[-1,]
-row.names(t37.1)<-NULL
-
-t37.2 <- t(t37.1[-1])
-colnames(t37.2) <- t37.1[, 1]
-
-rownames(t37.2) <- c("Fleet A", "Fleet C", "Fleet D", "Fleet F")
-
-t37.2 <- data.table(t37.2, keep.rownames = "fleet")
-
-t <- flextable(t37.2) %>%
-  set_table_properties(width = 1, layout = "autofit") %>%
-  bold(part = "header") %>%
-  padding(padding.bottom = 0, part = "all") %>%
-  padding(padding.top = 0, part = "all") %>%
-  bg(bg = "#B7D1C3", part = "header") %>%
-  border_inner_h(part = "all") %>%
-  set_caption(
-    caption = paste0(
-      "Catch per fleet"
-    ),
-    style = "Table Caption"
-  ) %>%
-  colformat_num(big.mark = "", na_str = "-")
-
-t
-```
-
-```{r, ft.align = "left"}
-t37 <- as.data.frame(read_html(paste(dir_fig, fig_prefix, "tabX4a.html", sep="")) %>% html_table(fill=TRUE))
+t37 <- as.data.frame(read_html(paste(dir_fig, fig_prefix, "tabX4.html", sep="")) %>% html_table(fill=TRUE))
 
 t37 <- t37[c(3, 5:(nrow(t37)-1)),]
 
@@ -296,7 +189,7 @@ t <- flextable(t37.2) %>%
   border_inner_h(part = "all") %>%
   set_caption(
     caption = paste0(
-      "TABLE 3.9.5 - WESTERN BALTIC SPRING SPAWNING HERRING. Multi fleet. Forecast table. F=FMSY=0.31"
+      "TABLE 3.9.5 - WESTERN BALTIC SPRING SPAWNING HERRING. Single fleet. Forecast table. F=F2026=0.008"
     ),
     style = "Table Caption"
   ) %>%
@@ -305,45 +198,9 @@ t <- flextable(t37.2) %>%
 t
 ```
 
-```{r, ft.align = "left"}
-t37 <- as.data.frame(read_html(paste(dir_fig, fig_prefix, "tabX4b.html", sep="")) %>% html_table(fill=TRUE))
-
-t37 <- t37[c(3, 5:(nrow(t37)-1)),]
-
-colnames(t37)<-unlist(t37[1, ], use.names = FALSE)
-
-t37.1<-t37[-1,]
-row.names(t37.1)<-NULL
-
-t37.2 <- t(t37.1[-1])
-colnames(t37.2) <- t37.1[, 1]
-
-rownames(t37.2) <- c("Fleet A", "Fleet C", "Fleet D", "Fleet F")
-
-t37.2 <- data.table(t37.2, keep.rownames = "fleet")
-
-t <- flextable(t37.2) %>%
-  set_table_properties(width = 1, layout = "autofit") %>%
-  bold(part = "header") %>%
-  padding(padding.bottom = 0, part = "all") %>%
-  padding(padding.top = 0, part = "all") %>%
-  bg(bg = "#B7D1C3", part = "header") %>%
-  border_inner_h(part = "all") %>%
-  set_caption(
-    caption = paste0(
-      "Catch per fleet"
-    ),
-    style = "Table Caption"
-  ) %>%
-  colformat_num(big.mark = "", na_str = "-")
-
-t
-```
-
-##### Page Break
 
 ```{r, ft.align = "left"}
-t37 <- as.data.frame(read_html(paste(dir_fig, fig_prefix, "tabX5a.html", sep="")) %>% html_table(fill=TRUE))
+t37 <- as.data.frame(read_html(paste(dir_fig, fig_prefix, "tabX5.html", sep="")) %>% html_table(fill=TRUE))
 
 t37 <- t37[c(3, 5:(nrow(t37)-1)),]
 
@@ -366,7 +223,7 @@ t <- flextable(t37.2) %>%
   border_inner_h(part = "all") %>%
   set_caption(
     caption = paste0(
-      "TABLE 3.9.6 - WESTERN BALTIC SPRING SPAWNING HERRING. Multi fleet. Forecast table. F=Fpa=0.41"
+      "TABLE 3.9.6 - WESTERN BALTIC SPRING SPAWNING HERRING. Single fleet. Forecast table. F=0.005"
     ),
     style = "Table Caption"
   ) %>%
@@ -376,42 +233,7 @@ t
 ```
 
 ```{r, ft.align = "left"}
-t37 <- as.data.frame(read_html(paste(dir_fig, fig_prefix, "tabX5b.html", sep="")) %>% html_table(fill=TRUE))
-
-t37 <- t37[c(3, 5:(nrow(t37)-1)),]
-
-colnames(t37)<-unlist(t37[1, ], use.names = FALSE)
-
-t37.1<-t37[-1,]
-row.names(t37.1)<-NULL
-
-t37.2 <- t(t37.1[-1])
-colnames(t37.2) <- t37.1[, 1]
-
-rownames(t37.2) <- c("Fleet A", "Fleet C", "Fleet D", "Fleet F")
-
-t37.2 <- data.table(t37.2, keep.rownames = "fleet")
-
-t <- flextable(t37.2) %>%
-  set_table_properties(width = 1, layout = "autofit") %>%
-  bold(part = "header") %>%
-  padding(padding.bottom = 0, part = "all") %>%
-  padding(padding.top = 0, part = "all") %>%
-  bg(bg = "#B7D1C3", part = "header") %>%
-  border_inner_h(part = "all") %>%
-  set_caption(
-    caption = paste0(
-      "Catch per fleet"
-    ),
-    style = "Table Caption"
-  ) %>%
-  colformat_num(big.mark = "", na_str = "-")
-
-t
-```
-
-```{r, ft.align = "left"}
-t37 <- as.data.frame(read_html(paste(dir_fig, fig_prefix, "tabX6a.html", sep="")) %>% html_table(fill=TRUE))
+t37 <- as.data.frame(read_html(paste(dir_fig, fig_prefix, "tabX6.html", sep="")) %>% html_table(fill=TRUE))
 
 t37 <- t37[c(3, 5:(nrow(t37)-1)),]
 
@@ -434,7 +256,7 @@ t <- flextable(t37.2) %>%
   border_inner_h(part = "all") %>%
   set_caption(
     caption = paste0(
-      "TABLE 3.9.7 - WESTERN BALTIC SPRING SPAWNING HERRING. Multi fleet. Forecast table. F=Flim=0.45"
+      "TABLE 3.9.7 - WESTERN BALTIC SPRING SPAWNING HERRING. Single fleet. Forecast table. F=0.01"
     ),
     style = "Table Caption"
   ) %>%
@@ -444,44 +266,7 @@ t
 ```
 
 ```{r, ft.align = "left"}
-t37 <- as.data.frame(read_html(paste(dir_fig, fig_prefix, "tabX6b.html", sep="")) %>% html_table(fill=TRUE))
-
-t37 <- t37[c(3, 5:(nrow(t37)-1)),]
-
-colnames(t37)<-unlist(t37[1, ], use.names = FALSE)
-
-t37.1<-t37[-1,]
-row.names(t37.1)<-NULL
-
-t37.2 <- t(t37.1[-1])
-colnames(t37.2) <- t37.1[, 1]
-
-rownames(t37.2) <- c("Fleet A", "Fleet C", "Fleet D", "Fleet F")
-
-t37.2 <- data.table(t37.2, keep.rownames = "fleet")
-
-t <- flextable(t37.2) %>%
-  set_table_properties(width = 1, layout = "autofit") %>%
-  bold(part = "header") %>%
-  padding(padding.bottom = 0, part = "all") %>%
-  padding(padding.top = 0, part = "all") %>%
-  bg(bg = "#B7D1C3", part = "header") %>%
-  border_inner_h(part = "all") %>%
-  set_caption(
-    caption = paste0(
-      "Catch per fleet"
-    ),
-    style = "Table Caption"
-  ) %>%
-  colformat_num(big.mark = "", na_str = "-")
-
-t
-```
-
-##### Page Break
-
-```{r, ft.align = "left"}
-t37 <- as.data.frame(read_html(paste(dir_fig, fig_prefix, "tabX7a.html", sep="")) %>% html_table(fill=TRUE))
+t37 <- as.data.frame(read_html(paste(dir_fig, fig_prefix, "tabX7.html", sep="")) %>% html_table(fill=TRUE))
 
 t37 <- t37[c(3, 5:(nrow(t37)-1)),]
 
@@ -504,7 +289,7 @@ t <- flextable(t37.2) %>%
   border_inner_h(part = "all") %>%
   set_caption(
     caption = paste0(
-      "TABLE 3.9.8 - WESTERN BALTIC SPRING SPAWNING HERRING. Multi fleet. Forecast table. F=F2025=0.045"
+      "TABLE 3.9.8 - WESTERN BALTIC SPRING SPAWNING HERRING. Single fleet. Forecast table. F=0.02"
     ),
     style = "Table Caption"
   ) %>%
@@ -514,42 +299,7 @@ t
 ```
 
 ```{r, ft.align = "left"}
-t37 <- as.data.frame(read_html(paste(dir_fig, fig_prefix, "tabX7b.html", sep="")) %>% html_table(fill=TRUE))
-
-t37 <- t37[c(3, 5:(nrow(t37)-1)),]
-
-colnames(t37)<-unlist(t37[1, ], use.names = FALSE)
-
-t37.1<-t37[-1,]
-row.names(t37.1)<-NULL
-
-t37.2 <- t(t37.1[-1])
-colnames(t37.2) <- t37.1[, 1]
-
-rownames(t37.2) <- c("Fleet A", "Fleet C", "Fleet D", "Fleet F")
-
-t37.2 <- data.table(t37.2, keep.rownames = "fleet")
-
-t <- flextable(t37.2) %>%
-  set_table_properties(width = 1, layout = "autofit") %>%
-  bold(part = "header") %>%
-  padding(padding.bottom = 0, part = "all") %>%
-  padding(padding.top = 0, part = "all") %>%
-  bg(bg = "#B7D1C3", part = "header") %>%
-  border_inner_h(part = "all") %>%
-  set_caption(
-    caption = paste0(
-      "Catch per fleet"
-    ),
-    style = "Table Caption"
-  ) %>%
-  colformat_num(big.mark = "", na_str = "-")
-
-t
-```
-
-```{r, ft.align = "left"}
-t37 <- as.data.frame(read_html(paste(dir_fig, fig_prefix, "tabX8a.html", sep="")) %>% html_table(fill=TRUE))
+t37 <- as.data.frame(read_html(paste(dir_fig, fig_prefix, "tabX8.html", sep="")) %>% html_table(fill=TRUE))
 
 t37 <- t37[c(3, 5:(nrow(t37)-1)),]
 
@@ -572,7 +322,7 @@ t <- flextable(t37.2) %>%
   border_inner_h(part = "all") %>%
   set_caption(
     caption = paste0(
-      "TABLE 3.9.9 - WESTERN BALTIC SPRING SPAWNING HERRING. Multi fleet. Forecast table. Catch for bycatch fleets only"
+      "TABLE 3.9.9 - WESTERN BALTIC SPRING SPAWNING HERRING. Single fleet. Forecast table. F=0.03"
     ),
     style = "Table Caption"
   ) %>%
@@ -581,110 +331,9 @@ t <- flextable(t37.2) %>%
 t
 ```
 
-```{r, ft.align = "left"}
-t37 <- as.data.frame(read_html(paste(dir_fig, fig_prefix, "tabX8b.html", sep="")) %>% html_table(fill=TRUE))
-
-t37 <- t37[c(3, 5:(nrow(t37)-1)),]
-
-colnames(t37)<-unlist(t37[1, ], use.names = FALSE)
-
-t37.1<-t37[-1,]
-row.names(t37.1)<-NULL
-
-t37.2 <- t(t37.1[-1])
-colnames(t37.2) <- t37.1[, 1]
-rownames(t37.2) <- c("Fleet A", "Fleet C", "Fleet D", "Fleet F")
-
-t37.2 <- data.table(t37.2, keep.rownames = "fleet")
-
-t <- flextable(t37.2) %>%
-  set_table_properties(width = 1, layout = "autofit") %>%
-  bold(part = "header") %>%
-  padding(padding.bottom = 0, part = "all") %>%
-  padding(padding.top = 0, part = "all") %>%
-  bg(bg = "#B7D1C3", part = "header") %>%
-  border_inner_h(part = "all") %>%
-  set_caption(
-    caption = paste0(
-      "Catch per fleet"
-    ),
-    style = "Table Caption"
-  ) %>%
-  colformat_num(big.mark = "", na_str = "-")
-
-t
-```
-
-##### Page Break
 
 ```{r, ft.align = "left"}
-t37 <- as.data.frame(read_html(paste(dir_fig, fig_prefix, "tabX9a.html", sep="")) %>% html_table(fill=TRUE))
-
-t37 <- t37[c(3, 5:(nrow(t37)-1)),]
-
-colnames(t37)<-unlist(t37[1, ], use.names = FALSE)
-
-t37.1<-t37[-1,]
-row.names(t37.1)<-NULL
-
-t37.2 <- t(t37.1[-1])
-colnames(t37.2) <- t37.1[, 1]
-t37.2 <- data.table(t37.2, keep.rownames = "value")
-
-t <- flextable(t37.2) %>%
-  set_table_properties(width = 1, layout = "autofit") %>%
-  bold(part = "header") %>%
-  padding(padding.bottom = 0, part = "all") %>%
-  padding(padding.top = 0, part = "all") %>%
-  bg(bg = "#B7D1C3", part = "header") %>%
-  border_inner_h(part = "all") %>%
-  set_caption(
-    caption = paste0(
-      "TABLE 3.9.10 - WESTERN BALTIC SPRING SPAWNING HERRING. Multi fleet. Forecast table. F=0"
-    ),
-    style = "Table Caption"
-  ) %>%
-  colformat_num(big.mark = "", na_str = "-")
-
-t
-```
-
-```{r, ft.align = "left"}
-t37 <- as.data.frame(read_html(paste(dir_fig, fig_prefix, "tabX9b.html", sep="")) %>% html_table(fill=TRUE))
-
-t37 <- t37[c(3, 5:(nrow(t37)-1)),]
-
-colnames(t37)<-unlist(t37[1, ], use.names = FALSE)
-
-t37.1<-t37[-1,]
-row.names(t37.1)<-NULL
-
-t37.2 <- t(t37.1[-1])
-colnames(t37.2) <- t37.1[, 1]
-rownames(t37.2) <- c("Fleet A", "Fleet C", "Fleet D", "Fleet F")
-
-t37.2 <- data.table(t37.2, keep.rownames = "fleet")
-
-t <- flextable(t37.2) %>%
-  set_table_properties(width = 1, layout = "autofit") %>%
-  bold(part = "header") %>%
-  padding(padding.bottom = 0, part = "all") %>%
-  padding(padding.top = 0, part = "all") %>%
-  bg(bg = "#B7D1C3", part = "header") %>%
-  border_inner_h(part = "all") %>%
-  set_caption(
-    caption = paste0(
-      "Catch per fleet"
-    ),
-    style = "Table Caption"
-  ) %>%
-  colformat_num(big.mark = "", na_str = "-")
-
-t
-```
-
-```{r, ft.align = "left"}
-t37 <- as.data.frame(read_html(paste(dir_fig, fig_prefix, "tabX10a.html", sep="")) %>% html_table(fill=TRUE))
+t37 <- as.data.frame(read_html(paste(dir_fig, fig_prefix, "tabX9.html", sep="")) %>% html_table(fill=TRUE))
 
 t37 <- t37[c(3, 5:(nrow(t37)-1)),]
 
@@ -707,42 +356,7 @@ t <- flextable(t37.2) %>%
   border_inner_h(part = "all") %>%
   set_caption(
     caption = paste0(
-      "TABLE 3.9.11 - WESTERN BALTIC SPRING SPAWNING HERRING. Multi fleet. Forecast table. F=0.01"
-    ),
-    style = "Table Caption"
-  ) %>%
-  colformat_num(big.mark = "", na_str = "-")
-
-t
-```
-
-```{r, ft.align = "left"}
-t37 <- as.data.frame(read_html(paste(dir_fig, fig_prefix, "tabX10b.html", sep="")) %>% html_table(fill=TRUE))
-
-t37 <- t37[c(3, 5:(nrow(t37)-1)),]
-
-colnames(t37)<-unlist(t37[1, ], use.names = FALSE)
-
-t37.1<-t37[-1,]
-row.names(t37.1)<-NULL
-
-t37.2 <- t(t37.1[-1])
-colnames(t37.2) <- t37.1[, 1]
-
-rownames(t37.2) <- c("Fleet A", "Fleet C", "Fleet D", "Fleet F")
-
-t37.2 <- data.table(t37.2, keep.rownames = "fleet")
-
-t <- flextable(t37.2) %>%
-  set_table_properties(width = 1, layout = "autofit") %>%
-  bold(part = "header") %>%
-  padding(padding.bottom = 0, part = "all") %>%
-  padding(padding.top = 0, part = "all") %>%
-  bg(bg = "#B7D1C3", part = "header") %>%
-  border_inner_h(part = "all") %>%
-  set_caption(
-    caption = paste0(
-      "Catch per fleet"
+      "TABLE 3.9.10 - WESTERN BALTIC SPRING SPAWNING HERRING. Single fleet. Forecast table. Constant intermediate year catch = 1905 t"
     ),
     style = "Table Caption"
   ) %>%
@@ -752,10 +366,9 @@ t
 ```
 
 
-##### Page Break
 
 ```{r, ft.align = "left"}
-t37 <- as.data.frame(read_html(paste(dir_fig, fig_prefix, "tabX11a.html", sep="")) %>% html_table(fill=TRUE))
+t37 <- as.data.frame(read_html(paste(dir_fig, fig_prefix, "tabProb.html", sep="")) %>% html_table(fill=TRUE))
 
 t37 <- t37[c(3, 5:(nrow(t37)-1)),]
 
@@ -764,12 +377,11 @@ colnames(t37)<-unlist(t37[1, ], use.names = FALSE)
 t37.1<-t37[-1,]
 row.names(t37.1)<-NULL
 
-t37.2 <- t(t37.1[-1])
-colnames(t37.2) <- t37.1[, 1]
+colnames(t37.1) <- c("Scenario", names(t37.1)[c(2:3)])
 
-t37.2 <- data.table(t37.2, keep.rownames = "value")
+t37.1 <- data.table(t37.1, keep.rownames = "value")
 
-t <- flextable(t37.2) %>%
+t <- flextable(t37.1) %>%
   set_table_properties(width = 1, layout = "autofit") %>%
   bold(part = "header") %>%
   padding(padding.bottom = 0, part = "all") %>%
@@ -778,318 +390,7 @@ t <- flextable(t37.2) %>%
   border_inner_h(part = "all") %>%
   set_caption(
     caption = paste0(
-      "TABLE 3.9.12 - WESTERN BALTIC SPRING SPAWNING HERRING. Multi fleet. Forecast table. F=0.025"
-    ),
-    style = "Table Caption"
-  ) %>%
-  colformat_num(big.mark = "", na_str = "-")
-
-t
-```
-
-```{r, ft.align = "left"}
-t37 <- as.data.frame(read_html(paste(dir_fig, fig_prefix, "tabX11b.html", sep="")) %>% html_table(fill=TRUE))
-
-t37 <- t37[c(3, 5:(nrow(t37)-1)),]
-
-colnames(t37)<-unlist(t37[1, ], use.names = FALSE)
-
-t37.1<-t37[-1,]
-row.names(t37.1)<-NULL
-
-t37.2 <- t(t37.1[-1])
-colnames(t37.2) <- t37.1[, 1]
-
-rownames(t37.2) <- c("Fleet A", "Fleet C", "Fleet D", "Fleet F")
-
-t37.2 <- data.table(t37.2, keep.rownames = "fleet")
-
-t <- flextable(t37.2) %>%
-  set_table_properties(width = 1, layout = "autofit") %>%
-  bold(part = "header") %>%
-  padding(padding.bottom = 0, part = "all") %>%
-  padding(padding.top = 0, part = "all") %>%
-  bg(bg = "#B7D1C3", part = "header") %>%
-  border_inner_h(part = "all") %>%
-  set_caption(
-    caption = paste0(
-      "Catch per fleet"
-    ),
-    style = "Table Caption"
-  ) %>%
-  colformat_num(big.mark = "", na_str = "-")
-
-t
-```
-
-```{r, ft.align = "left"}
-t37 <- as.data.frame(read_html(paste(dir_fig, fig_prefix, "tabX12a.html", sep="")) %>% html_table(fill=TRUE))
-
-t37 <- t37[c(3, 5:(nrow(t37)-1)),]
-
-colnames(t37)<-unlist(t37[1, ], use.names = FALSE)
-
-t37.1<-t37[-1,]
-row.names(t37.1)<-NULL
-
-t37.2 <- t(t37.1[-1])
-colnames(t37.2) <- t37.1[, 1]
-
-t37.2 <- data.table(t37.2, keep.rownames = "value")
-
-t <- flextable(t37.2) %>%
-  set_table_properties(width = 1, layout = "autofit") %>%
-  bold(part = "header") %>%
-  padding(padding.bottom = 0, part = "all") %>%
-  padding(padding.top = 0, part = "all") %>%
-  bg(bg = "#B7D1C3", part = "header") %>%
-  border_inner_h(part = "all") %>%
-  set_caption(
-    caption = paste0(
-      "TABLE 3.9.13 - WESTERN BALTIC SPRING SPAWNING HERRING. Multi fleet. Forecast table. F=0.05"
-    ),
-    style = "Table Caption"
-  ) %>%
-  colformat_num(big.mark = "", na_str = "-")
-
-t
-```
-
-```{r, ft.align = "left"}
-t37 <- as.data.frame(read_html(paste(dir_fig, fig_prefix, "tabX12b.html", sep="")) %>% html_table(fill=TRUE))
-
-t37 <- t37[c(3, 5:(nrow(t37)-1)),]
-
-colnames(t37)<-unlist(t37[1, ], use.names = FALSE)
-
-t37.1<-t37[-1,]
-row.names(t37.1)<-NULL
-
-t37.2 <- t(t37.1[-1])
-colnames(t37.2) <- t37.1[, 1]
-
-rownames(t37.2) <- c("Fleet A", "Fleet C", "Fleet D", "Fleet F")
-
-t37.2 <- data.table(t37.2, keep.rownames = "fleet")
-
-t <- flextable(t37.2) %>%
-  set_table_properties(width = 1, layout = "autofit") %>%
-  bold(part = "header") %>%
-  padding(padding.bottom = 0, part = "all") %>%
-  padding(padding.top = 0, part = "all") %>%
-  bg(bg = "#B7D1C3", part = "header") %>%
-  border_inner_h(part = "all") %>%
-  set_caption(
-    caption = paste0(
-      "Catch per fleet"
-    ),
-    style = "Table Caption"
-  ) %>%
-  colformat_num(big.mark = "", na_str = "-")
-
-t
-```
-
-##### Page Break
-
-```{r, ft.align = "left"}
-t37 <- as.data.frame(read_html(paste(dir_fig, fig_prefix, "tabX13a.html", sep="")) %>% html_table(fill=TRUE))
-
-t37 <- t37[c(3, 5:(nrow(t37)-1)),]
-
-colnames(t37)<-unlist(t37[1, ], use.names = FALSE)
-
-t37.1<-t37[-1,]
-row.names(t37.1)<-NULL
-
-t37.2 <- t(t37.1[-1])
-colnames(t37.2) <- t37.1[, 1]
-
-t37.2 <- data.table(t37.2, keep.rownames = "value")
-
-t <- flextable(t37.2) %>%
-  set_table_properties(width = 1, layout = "autofit") %>%
-  bold(part = "header") %>%
-  padding(padding.bottom = 0, part = "all") %>%
-  padding(padding.top = 0, part = "all") %>%
-  bg(bg = "#B7D1C3", part = "header") %>%
-  border_inner_h(part = "all") %>%
-  set_caption(
-    caption = paste0(
-      "TABLE 3.9.14 - WESTERN BALTIC SPRING SPAWNING HERRING. Multi fleet. Forecast table. F=0.1"
-    ),
-    style = "Table Caption"
-  ) %>%
-  colformat_num(big.mark = "", na_str = "-")
-
-t
-```
-
-```{r, ft.align = "left"}
-t37 <- as.data.frame(read_html(paste(dir_fig, fig_prefix, "tabX13b.html", sep="")) %>% html_table(fill=TRUE))
-
-t37 <- t37[c(3, 5:(nrow(t37)-1)),]
-
-colnames(t37)<-unlist(t37[1, ], use.names = FALSE)
-
-t37.1<-t37[-1,]
-row.names(t37.1)<-NULL
-
-t37.2 <- t(t37.1[-1])
-colnames(t37.2) <- t37.1[, 1]
-
-rownames(t37.2) <- c("Fleet A", "Fleet C", "Fleet D", "Fleet F")
-
-t37.2 <- data.table(t37.2, keep.rownames = "fleet")
-
-t <- flextable(t37.2) %>%
-  set_table_properties(width = 1, layout = "autofit") %>%
-  bold(part = "header") %>%
-  padding(padding.bottom = 0, part = "all") %>%
-  padding(padding.top = 0, part = "all") %>%
-  bg(bg = "#B7D1C3", part = "header") %>%
-  border_inner_h(part = "all") %>%
-  set_caption(
-    caption = paste0(
-      "Catch per fleet"
-    ),
-    style = "Table Caption"
-  ) %>%
-  colformat_num(big.mark = "", na_str = "-")
-
-t
-```
-
-```{r, ft.align = "left"}
-t37 <- as.data.frame(read_html(paste(dir_fig, fig_prefix, "tabX14a.html", sep="")) %>% html_table(fill=TRUE))
-
-t37 <- t37[c(3, 5:(nrow(t37)-1)),]
-
-colnames(t37)<-unlist(t37[1, ], use.names = FALSE)
-
-t37.1<-t37[-1,]
-row.names(t37.1)<-NULL
-
-t37.2 <- t(t37.1[-1])
-colnames(t37.2) <- t37.1[, 1]
-
-t37.2 <- data.table(t37.2, keep.rownames = "value")
-
-t <- flextable(t37.2) %>%
-  set_table_properties(width = 1, layout = "autofit") %>%
-  bold(part = "header") %>%
-  padding(padding.bottom = 0, part = "all") %>%
-  padding(padding.top = 0, part = "all") %>%
-  bg(bg = "#B7D1C3", part = "header") %>%
-  border_inner_h(part = "all") %>%
-  set_caption(
-    caption = paste0(
-      "TABLE 3.9.15 - WESTERN BALTIC SPRING SPAWNING HERRING. Multi fleet. Forecast table. F=0.15"
-    ),
-    style = "Table Caption"
-  ) %>%
-  colformat_num(big.mark = "", na_str = "-")
-
-t
-```
-
-```{r, ft.align = "left"}
-t37 <- as.data.frame(read_html(paste(dir_fig, fig_prefix, "tabX14b.html", sep="")) %>% html_table(fill=TRUE))
-
-t37 <- t37[c(3, 5:(nrow(t37)-1)),]
-
-colnames(t37)<-unlist(t37[1, ], use.names = FALSE)
-
-t37.1<-t37[-1,]
-row.names(t37.1)<-NULL
-
-t37.2 <- t(t37.1[-1])
-colnames(t37.2) <- t37.1[, 1]
-
-rownames(t37.2) <- c("Fleet A", "Fleet C", "Fleet D", "Fleet F")
-
-t37.2 <- data.table(t37.2, keep.rownames = "fleet")
-
-t <- flextable(t37.2) %>%
-  set_table_properties(width = 1, layout = "autofit") %>%
-  bold(part = "header") %>%
-  padding(padding.bottom = 0, part = "all") %>%
-  padding(padding.top = 0, part = "all") %>%
-  bg(bg = "#B7D1C3", part = "header") %>%
-  border_inner_h(part = "all") %>%
-  set_caption(
-    caption = paste0(
-      "Catch per fleet"
-    ),
-    style = "Table Caption"
-  ) %>%
-  colformat_num(big.mark = "", na_str = "-")
-
-t
-```
-
-##### Page Break
-
-```{r, ft.align = "left"}
-t37 <- as.data.frame(read_html(paste(dir_fig, fig_prefix, "tabX15a.html", sep="")) %>% html_table(fill=TRUE))
-
-t37 <- t37[c(3, 5:(nrow(t37)-1)),]
-
-colnames(t37)<-unlist(t37[1, ], use.names = FALSE)
-
-t37.1<-t37[-1,]
-row.names(t37.1)<-NULL
-
-t37.2 <- t(t37.1[-1])
-colnames(t37.2) <- t37.1[, 1]
-
-t37.2 <- data.table(t37.2, keep.rownames = "value")
-
-t <- flextable(t37.2) %>%
-  set_table_properties(width = 1, layout = "autofit") %>%
-  bold(part = "header") %>%
-  padding(padding.bottom = 0, part = "all") %>%
-  padding(padding.top = 0, part = "all") %>%
-  bg(bg = "#B7D1C3", part = "header") %>%
-  border_inner_h(part = "all") %>%
-  set_caption(
-    caption = paste0(
-      "TABLE 3.9.16 - WESTERN BALTIC SPRING SPAWNING HERRING. Multi fleet. Forecast table. Constant 2025 TAC"
-    ),
-    style = "Table Caption"
-  ) %>%
-  colformat_num(big.mark = "", na_str = "-")
-
-t
-```
-
-```{r, ft.align = "left"}
-t37 <- as.data.frame(read_html(paste(dir_fig, fig_prefix, "tabX15b.html", sep="")) %>% html_table(fill=TRUE))
-
-t37 <- t37[c(3, 5:(nrow(t37)-1)),]
-
-colnames(t37)<-unlist(t37[1, ], use.names = FALSE)
-
-t37.1<-t37[-1,]
-row.names(t37.1)<-NULL
-
-t37.2 <- t(t37.1[-1])
-colnames(t37.2) <- t37.1[, 1]
-
-rownames(t37.2) <- c("Fleet A", "Fleet C", "Fleet D", "Fleet F")
-
-t37.2 <- data.table(t37.2, keep.rownames = "fleet")
-
-t <- flextable(t37.2) %>%
-  set_table_properties(width = 1, layout = "autofit") %>%
-  bold(part = "header") %>%
-  padding(padding.bottom = 0, part = "all") %>%
-  padding(padding.top = 0, part = "all") %>%
-  bg(bg = "#B7D1C3", part = "header") %>%
-  border_inner_h(part = "all") %>%
-  set_caption(
-    caption = paste0(
-      "Catch per fleet"
+      "TABLE 3.9.11 - WESTERN BALTIC SPRING SPAWNING HERRING. Single fleet. Forecast table. Probability of SSB being below Blim in two relevant forecast years"
     ),
     style = "Table Caption"
   ) %>%
