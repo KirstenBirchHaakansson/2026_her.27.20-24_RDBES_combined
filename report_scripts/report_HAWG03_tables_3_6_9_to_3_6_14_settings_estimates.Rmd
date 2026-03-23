@@ -38,7 +38,7 @@ name <- "WBSS_HAWG_2026"
 
 load(paste0(path_root, "boot/data/download_from_stockassessment_org_single_fleet/model.RData"))
 
-#Multi fleet
+#Single fleet
 dir_dat <-
   "https://www.stockassessment.org/datadisk/stockassessment/userdirs/user295/WBSS_HAWG_2026/data/" #input data directly from www.stockassessment.org
 dir_fig <-
