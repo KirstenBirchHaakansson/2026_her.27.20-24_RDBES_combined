@@ -128,7 +128,7 @@ t3612 <- t3612[c(3:nrow(t3612)), ]
 dat_1 <- t3612[-(1:2), ]
 
 names(dat_1) <- c("year", "R(age 0)", "R low", "R high", "SSB", "SSB low", 
-                  "SSB high", "Fbar(3-6)", "Fbar low", "Fbar high",
+                  "SSB high", "Fbar(2-5)", "Fbar low", "Fbar high",
                   "TSB", "TSB low", "TSB High")
 
 t <- flextable(dat_1) %>%
