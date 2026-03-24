@@ -15,7 +15,7 @@ This script makes additional plot for the WBSS report
 # path_root <-
 #   "Q:/mynd/kibi/SC_work/her.27.20-24/2024_her.27.20-24_RDBES_combined/"
 
-knitr::opts_knit$set(root.dir = "../report_scripts")
+knitr::opts_knit$set(root.dir = "./report_scripts")
 
 library(dplyr)
 library(ggplot2)
@@ -32,15 +32,15 @@ opts_chunk$set(tidy.opts = list(width.cutoff = 80), tidy = TRUE)
 options(scripen = 9999, digits = 10)
 
 #dir_data<-"C:/HAWG/2018/WBSS/report/user278-WBSS_HAWG_2018/WBSS_HAWG_2018/"
-dir_data_input <- "https://www.stockassessment.org/datadisk/stockassessment/userdirs/user278/WBSS_HAWG_2025/data/" #input data directly from www.stockassessment.org
+dir_data_input <- "https://www.stockassessment.org/datadisk/stockassessment/userdirs/user295/WBSS_HAWG_2026/data/" #input data directly from www.stockassessment.org
 
 # output_path <- "report_script"
 
-source("../report_scripts/ggplot_AgeDistStk.R")
+source("./report_scripts/ggplot_AgeDistStk.R")
 
-load("../boot/data/download_from_stockassessment_org_multi_fleet/model.RData")
+load("./boot/data/download_from_stockassessment_org_single_fleet/model.RData")
 
- catch.dat <- read.csv("../boot/data/tac_catchs_table_for_fig/Herring_TAC_catches_by_area.csv", sep = ";")
+# catch.dat <- read.csv("../boot/data/tac_catchs_table_for_fig/Herring_TAC_catches_by_area.csv", sep = ";")
 
 
 knitr::opts_chunk$set(
@@ -63,7 +63,7 @@ n20<-data.frame(sur$N20)
 n20$year<-as.numeric(rownames(n20))
 n20$X0 <- n20$X0/1000
 
-geras<-round(select(data.frame(sur$GerAS), X1)/1000, digits = 2)
+geras<-round(select(data.frame(sur$GERAS), X1)/1000, digits = 2)
 geras$year<-as.numeric(rownames(geras))
 geras$year<-geras$year-1
 
@@ -89,54 +89,67 @@ ggplot(com, aes(x=X0, y=X1, label=substr(year,3,4))) +
 
 ## Weight at age in catch
 ```{r weigth at age catch}
-cw<-round(read.ices(paste(dir_data_input,"cw.dat", sep="")), digits=4)
-cw2<-melt(cw, id="year")
-colnames(cw2)<-c("year","wr","weca")
+cw <- round(read.ices(paste(dir_data_input, "cw.dat", sep = "")), digits = 4)
 
-ggplot(cw2, aes(year, weca, colour=as.character(wr)))+
-  geom_line(linewidth=1) +
-  geom_point(size=2) +
-  scale_colour_manual(values = viridis(9, option="D"), name = "wr") +
-  labs(title = "Mean weight at age in catch", y ="WECA (kg)") + guides(colour = guide_legend(reverse=T))
+cw <- as.data.frame(cw)
+cw$year <- row.names(cw)
+cw2 <- gather(cw, key = "wr", value = "weca", -year)
+
+ggplot(cw2, aes(year, weca, colour = as.character(wr), group = as.character(wr))) +
+  geom_line(linewidth = 1) +
+  geom_point(size = 2) +
+  scale_colour_manual(values = viridis(9, option = "D"), name = "wr") +
+  labs(title = "Mean weight at age in catch", y = "WECA (kg)") + 
+  guides(colour = guide_legend(reverse = F, nrow = 1)) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
+        legend.position = "bottom")
 ```
 
 ## Weight at age in stock
 ```{r weigth at age stock}
-sw<-round(read.ices(paste(dir_data_input,"sw.dat", sep="")), digits=4)
-sw2<-melt(sw, id="year")
-colnames(sw2)<-c("year","wr","weca")
+sw <- round(read.ices(paste(dir_data_input, "sw.dat", sep = "")), digits = 4)
 
-ggplot(sw2, aes(year, weca, colour=as.character(wr)))+
-  geom_line(linewidth=1) +
-  geom_point(size=2) +
-  scale_colour_manual(values =  viridis(9, option="D"), name = "wr") +
-  labs(title = "Mean weight at age in stock", y ="WECA (kg)") + guides(colour = guide_legend(reverse=T))
+sw <- as.data.frame(sw)
+sw$year <- row.names(sw)
+sw2 <- gather(sw, key = "wr", value = "weca", -year)
+
+ggplot(sw2, aes(year, weca, colour = as.character(wr), group = as.character(wr))) +
+  geom_line(linewidth = 1) +
+  geom_point(size = 2) +
+  scale_colour_manual(values = viridis(9, option = "D"), name = "wr") +
+  labs(title = "Mean weight at age in stock", y = "WECA (kg)") + 
+  guides(colour = guide_legend(reverse = F, nrow = 1)) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1), legend.position = "bottom")
 ```
 
 ## F at age in catch
 ```{r f at age, eval = T}
 f1 <- faytable(fit,fleet=1)
-f2 <- faytable(fit,fleet=2)
-f3 <- faytable(fit,fleet=3)
-f4 <- faytable(fit,fleet=4)
+f1 <- as.data.frame(f1)
+f1$year <- row.names(f1)
+fc1 <- gather(f1, key = "wr", value = "f", -year)
 
-fc<-f1+f2+f3+f4
-
-fc1<-melt(fc, id="year")
-colnames(fc1)<-c("year","wr","f")
-
-ggplot(fc1, aes(year, f, colour=as.character(wr)))+
-  geom_line(linewidth=1) +
-  geom_point(size=2) +
-  scale_colour_manual(values =  viridis(9, option="D"), name = "wr") +
-  labs(y ="f") + guides(colour = guide_legend(reverse=T))
+ggplot(fc1, aes(year, f, colour = as.character(wr), group = as.character(wr))) +
+  geom_line(linewidth = 1) +
+  geom_point(size = 2) +
+  scale_colour_manual(values =  viridis(9, option = "D"), name = "wr") +
+  labs(y = "f") + 
+  guides(colour = guide_legend(reverse = F, nrow = 1)) +
+  theme(axis.text.x = element_text(
+    angle = 90,
+    vjust = 0.5,
+    hjust = 1
+  ),
+  legend.position = "bottom")
 ```
 
 
 ```{r catch number by age, fig.height=7, fig.width=6}
 cn<-round(read.ices(paste(dir_data_input,"cn.dat", sep="")), digits=4)
-cn2<-melt(cn, id="year")
-colnames(cn2)<-c("year","wr","n")
+
+cn <- as.data.frame(cn)
+cn$year <- row.names(cn)
+cn2 <- gather(cn, key = "wr", value = "n", -year)
 
 cn2$n<-cn2$n/1000
 n.year<-summarise(group_by(cn2, year), n.year=sum(n))
@@ -144,44 +157,62 @@ cn3<-left_join(cn2, n.year)
 cn3$prop<-cn3$n/cn3$n.year
 cn4<-select(cn3, -n.year)
 
-cn5<-melt(cn4, id=c("year","wr"))
-cn5<-arrange(cn5, - wr)
+cn5<-gather(cn4, key = "variable", value = "value", -year, -wr)
+cn5<-arrange(cn5, -as.numeric(wr))
 cn5$wr<-as.factor(cn5$wr)
 cn5$wr <- factor(cn5$wr, levels = rev(levels(cn5$wr)))
 levels(cn5$variable) <- c("Number (millions)", "Proportion")
 
-ggplot(cn5, aes(year, value, fill=wr)) +
+ggplot(cn5, aes(x = year, y = value, fill=wr, group = wr)) +
   geom_area(position = 'stack') +
   facet_grid(variable~., scales="free_y") +
   scale_fill_manual(values =  rev(viridis(9, option="D")), name = "wr") +
-  labs(title = "Catch in numbers", y = "") + guides(colour = guide_legend(reverse=T))
+  labs(title = "Catch in numbers", y = "") + guides(colour = guide_legend(reverse = T)) +
+  theme(axis.text.x = element_text(
+    angle = 90,
+    vjust = 0.5,
+    hjust = 1
+  ))
 
 ```
 
 ```{r catch weigth by age, fig.height=7, fig.width=6}
-cn<-round(read.ices(paste(dir_data_input,"cn.dat", sep="")), digits=4)
-cw<-round(read.ices(paste(dir_data_input,"cw.dat", sep="")), digits=4)
-w<-cn*cw
-w2<-melt(w, id="year")
-colnames(w2)<-c("year","wr","w")
+cn <- round(read.ices(paste(dir_data_input, "cn.dat", sep = "")), digits =
+              4)
+cw <- round(read.ices(paste(dir_data_input, "cw.dat", sep = "")), digits =
+              4)
+w <- cn * cw
+w <- as.data.frame(w)
+w$year <- row.names(w)
+w2 <- gather(w, key = "wr", value = "w", -year)
+w2$w <- w2$w / 1000
 
-w2$w<-w2$w/1000
-w.year<-summarise(group_by(w2, year), w.year=sum(w))
-w3<-left_join(w2, w.year)
-w3$prop<-w3$w/w3$w.year
-w4<-select(w3, -w.year)
+w.year <- summarise(group_by(w2, year), w.year = sum(w))
+w3 <- left_join(w2, w.year)
+w3$prop <- w3$w / w3$w.year
+w4 <- select(w3, -w.year)
 
-w5<-melt(w4, id=c("year","wr"))
-w5<-arrange(w5, - wr)
-w5$wr<-as.factor(w5$wr)
+w5 <- gather(w4, key = "variable", value = "value", -year, -wr)
+w5 <- arrange(w5, -as.numeric(wr))
+w5$wr <- as.factor(w5$wr)
 w5$wr <- factor(w5$wr, levels = rev(levels(w5$wr)))
-levels(w5$variable) <- c("Weight (1000 tons)", "Proportion")
+levels(w5$variable) <- c("Number (millions)", "Proportion")
 
-ggplot(w5, aes(year, value, fill=wr)) +
+ggplot(w5, aes(
+  x = year,
+  y = value,
+  fill = wr,
+  group = wr
+)) +
   geom_area(position = 'stack') +
-  facet_grid(variable~., scales="free_y") +
-  scale_fill_manual(values =  rev(viridis(9, option="D")), name = "wr") +
-  labs(title = "Catch in weight", y = "")
+  facet_grid(variable ~ ., scales = "free_y") +
+  scale_fill_manual(values =  rev(viridis(9, option = "D")), name = "wr") +
+  labs(title = "Catch in weight", y = "") + guides(colour = guide_legend(reverse = T)) +
+  theme(axis.text.x = element_text(
+    angle = 90,
+    vjust = 0.5,
+    hjust = 1
+  ))
 
 ```
 
@@ -189,17 +220,15 @@ ggplot(w5, aes(year, value, fill=wr)) +
 ## Selection commercial per fleet
 
 ```{r Selection commercial per fleet, eval = T}
-fleets <- attr(fit$data,"fleetNames")[1:4]<-paste0("Fleet ", c("A","C","D","F"))
 
-faa <- NULL
-for(i in 1:4){
-tmp <- faytable(fit,fleet=i)
+
+tmp <- faytable(fit)
 tmp <- data.frame(year=as.numeric(rownames(tmp)),tmp)
 tmp <- tmp %>% gather("age","val",-1) %>% mutate(age=substring(age,2,3))
 tmp$grp <- cut(tmp$year,breaks=(6), include.lowest=T, right=T)
-tmp$fleet <- fleets[i]
-faa <- rbind(faa,tmp)
-}
+
+faa <- tmp
+
 
 grp<-distinct(faa, grp, year)
 grp$value<-1
@@ -207,7 +236,7 @@ grp$csum <- ave(grp$value, grp$grp, FUN=cumsum)
 
 faa<-merge(faa, grp)
 
-ggplot(faa, aes(age,val,group=year)) + geom_line(aes(colour = csum)) + facet_grid(fleet~grp, scales="free_y") + labs(y="Catchability", x="wr") + scale_colour_gradientn(colours = viridis(7), name="Order")
+ggplot(faa, aes(age,val,group=year)) + geom_line(aes(colour = csum)) + facet_grid(~grp, scales="free_y") + labs(y="Catchability", x="wr") + scale_colour_gradientn(colours = viridis(7), name="Order")
 ```
 
 ```{r Selection commercial per fleet 2020 2024, eval = F}
