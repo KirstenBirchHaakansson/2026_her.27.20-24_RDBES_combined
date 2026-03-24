@@ -161,14 +161,19 @@ draft.data(data.files = NULL,
 #            file = T,
 #            append = T)
 # 
-# draft.data(data.files = "tac_catchs_table_for_fig",
-#            data.scripts = NULL,
-#            originator = "Kibi",
-#            title = "TAC and catches tables updated with 2024",
-#            file = T,
-#            append = T)
+draft.data(data.files = "tac_catchs_table_for_fig",
+           data.scripts = NULL,
+           originator = "Kibi",
+           title = "TAC and catches tables updated with 2025",
+           file = T,
+           append = T)
 
-
+draft.data(data.files = "trawl_survey_index",
+           data.scripts = NULL,
+           originator = "Casper",
+           title = "Trawl survey index (BITS, IBTS) updated with 2025 data",
+           file = T,
+           append = T)
 
 taf.boot()
 
