@@ -36,7 +36,7 @@ ggAgeDistStk2 <- function(fit, yrs=NULL, ageVec=NULL, biomass=FALSE, ...){
     tmp$yc <- tmp$year-tmp$age
 
     # '+' on plus-group if needed
-    tmp$age <- ifelse(tmp$age==fit$conf$maxAge & fit$conf$maxAgePlusGroup==1,
+    tmp$age <- ifelse(tmp$age==fit$conf$maxAge,
                       paste(tmp$age,"+",sep=""),
                       tmp$age)
     
