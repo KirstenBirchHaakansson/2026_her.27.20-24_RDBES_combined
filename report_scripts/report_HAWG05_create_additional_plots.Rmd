@@ -15,7 +15,7 @@ This script makes additional plot for the WBSS report
 # path_root <-
 #   "Q:/mynd/kibi/SC_work/her.27.20-24/2024_her.27.20-24_RDBES_combined/"
 
-knitr::opts_knit$set(root.dir = "./report_scripts")
+# knitr::opts_knit$set(root.dir = "./report_scripts")
 
 library(dplyr)
 library(ggplot2)
@@ -36,11 +36,11 @@ dir_data_input <- "https://www.stockassessment.org/datadisk/stockassessment/user
 
 # output_path <- "report_script"
 
-source("./report_scripts/ggplot_AgeDistStk.R")
+source("../report_scripts/ggplot_AgeDistStk.R")
 
-load("./boot/data/download_from_stockassessment_org_single_fleet/model.RData")
+load("../boot/data/download_from_stockassessment_org_single_fleet/model.RData")
 
-# catch.dat <- read.csv("../boot/data/tac_catchs_table_for_fig/Herring_TAC_catches_by_area.csv", sep = ";")
+catch.dat <- read.csv("../boot/data/tac_catchs_table_for_fig/Herring_TAC_catches_by_area.csv", sep = ";")
 
 
 knitr::opts_chunk$set(
@@ -272,7 +272,7 @@ ggAgeDistStk2(fit)
 # TAC and catch
 ```{r, eval = T}
 
-png(filename = "report_scripts/TAC_catch.png", width = 18, height = 20, res = 300, units = "cm", pointsize = 15)
+png(filename = "../report_scripts/TAC_catch.png", width = 18, height = 20, res = 300, units = "cm", pointsize = 15)
 
 #Catch and TAC
 
