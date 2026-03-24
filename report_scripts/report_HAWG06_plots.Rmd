@@ -10,7 +10,7 @@ output:
 #   "C:/Users/kibi/OneDrive - Danmarks Tekniske Universitet/SC_work/her.27.20-24/2024_her.27.20-24_RDBES_combined/"
 
 path_root <-
-  "C:/Users/kibi/OneDrive - Danmarks Tekniske Universitet/stock_coord_work/her.27.20-24/2025_her.27.20-24_RDBES_combined/"
+  "C:/Users/kibi/OneDrive - Danmarks Tekniske Universitet/stock_coord_work/her.27.20-24/2026_her.27.20-24_RDBES_combined/"
 
 knitr::opts_knit$set(root.dir = path_root)
 
@@ -24,11 +24,23 @@ knitr::opts_knit$set(root.dir = path_root)
 
 <br>
 
-![Figure 3.3.1 WESTERN BALTIC SPRING SPAWNING HERRING. Map showing distibution of hauls and the density of fish per age in the IBTS+BITS-Q1 survey.](mapsQ1.png)
+![Figure 3.3.1.a WESTERN BALTIC SPRING SPAWNING HERRING. Map showing estimated density fish wr 1 per year in the IBTS+BITS Q1 survey.](../boot/data/trawl_survey_index/map-age1.png)
 
 <br>
 
-![Figure 3.3.2 WESTERN BALTIC SPRING SPAWNING HERRING. Map showing distibution of hauls and the density of fish per age in the IBTS+BITS-Q3.4 survey.](mapsQ34.png)
+![Figure 3.3.1.b WESTERN BALTIC SPRING SPAWNING HERRING. Map showing estimated density of number of fish wr 2 per year in the IBTS+BITS Q1 survey.](../boot/data/trawl_survey_index/map-age2.png)
+
+<br>
+
+![Figure 3.3.1.c WESTERN BALTIC SPRING SPAWNING HERRING. Map showing estimated density of number of fish wr 3 per year in the IBTS+BITS Q1 survey.](../boot/data/trawl_survey_index/map-age3.png)
+
+<br>
+
+![Figure 3.3.1.d WESTERN BALTIC SPRING SPAWNING HERRING. Map showing estimated density of number of fish wr 4 per year in the IBTS+BITS Q1 survey.](../boot/data/trawl_survey_index/map-age4.png)
+
+<br>
+
+![Figure 3.3.1.e WESTERN BALTIC SPRING SPAWNING HERRING. Map showing estimated density of number of fish wr 5 per year in the IBTS+BITS Q1 survey.](../boot/data/trawl_survey_index/map-age5.png)
 
 <br>
 
