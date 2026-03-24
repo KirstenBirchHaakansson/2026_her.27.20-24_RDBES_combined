@@ -124,7 +124,7 @@ ggplot(sw2, aes(year, weca, colour = as.character(wr), group = as.character(wr))
 
 ## F at age in catch
 ```{r f at age, eval = T}
-f1 <- faytable(fit,fleet=1)
+f1 <- faytable(fit)
 f1 <- as.data.frame(f1)
 f1$year <- row.names(f1)
 fc1 <- gather(f1, key = "wr", value = "f", -year)
