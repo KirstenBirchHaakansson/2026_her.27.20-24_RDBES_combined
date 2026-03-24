@@ -15,7 +15,7 @@ This script makes additional plot for the WBSS report
 # path_root <-
 #   "Q:/mynd/kibi/SC_work/her.27.20-24/2024_her.27.20-24_RDBES_combined/"
 
-# knitr::opts_knit$set(root.dir = "./report_scripts")
+# knitr::opts_knit$set(root.dir = "../report_scripts")
 
 library(dplyr)
 library(ggplot2)
@@ -81,7 +81,7 @@ lm_eqn <- function(df, x, y){
 ggplot(com, aes(x=X0, y=X1, label=substr(year,3,4))) +
   geom_text(size = 3, col="#313695") + 
   geom_smooth(method='lm',formula=y~x, se = FALSE, col=viridis(1, begin=0.5, option="D")) +
-  geom_text(x = 15000, y = 500, label = lm_eqn(com, x=com$X0, y=com$X1), parse = TRUE) +
+  geom_text(x = 9000, y = 500, label = lm_eqn(com, x=com$X0, y=com$X1), parse = TRUE) +
   labs(x="N20 wr 0 (millions), year", y="GerAS wr 1 (millions), year-1")
 
 ```
@@ -236,7 +236,7 @@ grp$csum <- ave(grp$value, grp$grp, FUN=cumsum)
 
 faa<-merge(faa, grp)
 
-ggplot(faa, aes(age,val,group=year)) + geom_line(aes(colour = csum)) + facet_grid(~grp, scales="free_y") + labs(y="Catchability", x="wr") + scale_colour_gradientn(colours = viridis(7), name="Order")
+ggplot(faa, aes(age,val,group=year)) + geom_line(aes(colour = csum)) + facet_wrap(~grp, scales="free_y") + labs(y="Catchability", x="wr") + scale_colour_gradientn(colours = viridis(7), name="Order")
 ```
 
 ```{r Selection commercial per fleet 2020 2024, eval = F}
