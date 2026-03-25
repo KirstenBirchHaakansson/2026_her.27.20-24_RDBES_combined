@@ -55,9 +55,7 @@ filestoget <- c(
     download.file(paste(url, f, sep = ""), f))
   
   # Download png's
-  
-  SAOAssessment <- "WBSS_HAWG_2025"   # = stock name in stockassesssment.org
-  user <- 295                          # User 2 = Anders; User 3 = Guest (ALWAYS GETS THE LATEST COMMITTED VERSION)
+                        # User 2 = Anders; User 3 = Guest (ALWAYS GETS THE LATEST COMMITTED VERSION)
   url <-
     paste(
       "https://www.stockassessment.org/datadisk/stockassessment/userdirs/user",
