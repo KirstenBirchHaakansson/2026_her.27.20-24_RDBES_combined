@@ -54,3 +54,14 @@ ggplot(dat = done_sum, aes(x = year, y = catch_1000t, col = type)) +
 ```
 
 
+```{r}
+
+done_sum <- summarise(group_by(done, year, type), catch_1000t = sum(catch_1000t, na.rm = T))
+
+ggplot(dat = done_sum, aes(x = year, y = catch_1000t, col = type)) +
+  geom_line(size = 1) +
+  scale_color_brewer(palette = "Dark2") 
+
+```
+
+
