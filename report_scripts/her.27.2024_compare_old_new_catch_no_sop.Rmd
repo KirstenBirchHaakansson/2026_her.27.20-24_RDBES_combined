@@ -1,0 +1,56 @@
+---
+title: "xxx"
+author: "Kirsten Birch Håkansson, DTU Aqua"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(dplyr)
+library(ggplot2)
+library(RColorBrewer)
+
+knitr::opts_chunk$set(echo = TRUE)
+
+year_last <- 2024
+```
+
+
+```{r}
+dat_old <- read.csv(paste0("../boot/data/data_from_last_year/", "catch_no_sop_year_ctry_1989_", year_last, ".csv"))
+dat_old$type <- "old"
+
+dat_new <- read.csv(paste0("../data/", "C2_her2024_canum_without_imputations_2000_2025.csv"), sep = ";")
+names(dat_new)
+unique(dat_new$wr)
+dat_new$type <- "new"
+
+# catch_t is repeated per wr, so only select a single age
+dat_new <- subset(dat_new, wr == "8+")
+
+# Combine
+
+dat_new$area[dat_new$area %in% c("27.3.c.22", "27.3.d.24")] <- "27.3.c.22 & 27.3.d.24"
+
+
+unique(dat_new$area)
+
+dat_new_sum <- summarise(group_by(dat_new, year, area, ctry, type), catch_1000t = sum(catch_t/1000, na.rm = T))
+
+done <- rbind(dat_old, dat_new_sum)
+done$area[done$area %in% c("27.3.c.22 & 27.3.d.24")] <- "27.3.c.22, 27.3.d.24"
+```
+
+
+```{r}
+
+done_sum <- summarise(group_by(done, year, area, type), catch_1000t = sum(catch_1000t, na.rm = T))
+
+ggplot(dat = done_sum, aes(x = year, y = catch_1000t, col = type)) +
+  geom_line(size = 1) +
+  scale_color_brewer(palette = "Dark2") +
+  facet_wrap(~area)
+
+```
+
+
