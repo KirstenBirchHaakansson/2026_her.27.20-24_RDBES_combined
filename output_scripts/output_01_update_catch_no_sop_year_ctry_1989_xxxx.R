@@ -73,5 +73,6 @@ kable(summarise(group_by(done, year), catch_1000t = sum(catch_1000t, na.rm = T))
 
 write.csv(done, paste0("output/", "catch_no_sop_year_ctry_1989_", year_new_last, ".csv"), row.names = F)
 
+done$catch_t <- done$catch_1000t*1000
 
-
+write.csv(done, paste0("output/", "catch_no_sop_year_ctry_1989_", year_new_last, "_for_advice", ".csv"), row.names = F)
