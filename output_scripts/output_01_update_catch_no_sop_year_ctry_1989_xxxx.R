@@ -3,7 +3,7 @@
 library(dplyr)
 library(knitr)
 
-year_to_update <- c(2000:2025) # only works with a single year
+year_to_update <- c(2000:2025)
 year_last <- 2024 #The end year of the time series to update
 year_new_last <- 2025
 
