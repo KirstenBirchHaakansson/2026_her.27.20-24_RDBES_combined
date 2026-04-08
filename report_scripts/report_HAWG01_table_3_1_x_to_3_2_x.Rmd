@@ -280,7 +280,7 @@ canumFS$nsas_canum_mill <- canumFS$nsas_canum_1000 / 1000
 canumFS$wbss_canum_mill <- canumFS$wbss_canum_1000 / 1000
 
 dat_327 <- read.csv(paste0("output/", "wbss_canum_weca_year_1993_", year_data, ".csv"), sep = ",")
-dat_328 <- read.csv(paste0("output/", "nsas_canum_weca_sop_year_1993_", year_data, ".csv"), sep = ",")
+# dat_328 <- read.csv(paste0("output/", "nsas_canum_weca_sop_year_1993_", year_data, ".csv"), sep = ",")
 
 ```
 
@@ -390,7 +390,7 @@ t3
 
 ```{r t_3_2_2, ft.align="left", eval = T}
 
-impu <- canumF
+impu <- subset(canumF, wr == "8+")
 
 dat_322 <-
   subset(
@@ -558,7 +558,7 @@ t6 <- flextable(data_324_all_t) %>%
   padding(padding.top = 0, part = "all") %>%
   bg(bg = "#B7D1C3", part = "header") %>%
   border_inner_h(part = "all") %>%
-  set_caption(caption = "Table 3.2.4 WESTERN BALTIC HERRING. Proportion of North Sea autumn spawners (NSAS) and Western Baltic spring spawners (WBSS) in Skagerrak (27.3.a.20) and Kattegat (27.3.a.21) by age as W-ringers and quarter. n: number of individuals sampled for stock. The samples can come from both commercial and scientific survey samping schemes",
+  set_caption(caption = "Table 3.2.4 WESTERN BALTIC HERRING. Proportion of North Sea autumn spawners (NSAS) and Western Baltic spring spawners (WBSS) in Skagerrak (27.3.a.20) and Kattegat (27.3.a.21) by age as W-ringers and quarter. n: number of individuals sampled for stock. The samples can come from both commercial and scientific survey sampling schemes",
               style = "Table Caption") %>%
   colformat_num(
   big.mark = "", na_str = "-", nan_str = "-") %>%
@@ -659,10 +659,10 @@ wbss4 <- read_excel(
     "boot/data/split_data/",
     "Her21-IVaE_transfer_only_split_",
     year_data,
-    ".xlsx",
+    "_v2.xlsx",
     sep = ""
   ),
-  sheet = 3
+  sheet = "4ae_wbss"
 )
 wbss4$wr<-ifelse(wbss4$wr %in% c("8","9"), "8+", wbss4$wr)
 wbss4_sum <- mutate(summarise(group_by(wbss4, year, area, quarter, wr), caton_t = sum(canum_000*weca_kg, na.rm = 0),
@@ -822,7 +822,7 @@ t9
 
 ```
 
-```{r t_3_2_8, ft.align="left", eval = T}
+```{r t_3_2_8, ft.align="left", eval = F}
 
 # names(dat_328)
 
