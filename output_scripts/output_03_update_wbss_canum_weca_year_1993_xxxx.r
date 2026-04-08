@@ -4,14 +4,15 @@ library(dplyr)
 library(knitr)
 library(readxl)
 
-year_last <- 2023
-year_to_update <- c(2024) # only works with a single year
+year_to_update <- c(2000:2025)
+year_last <- 2024 #The end year of the time series to update
+year_new_last <- 2025
 
 # Old data
 
 dat_old <-
   read.csv(paste0(
-    "boot/data/time_series/",
+    "boot/data/data_from_last_year/",
     "wbss_canum_weca_year_1993_",
     year_last,
     ".csv"

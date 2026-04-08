@@ -7,7 +7,7 @@ always_allow_html: true
 
 ```{r setup, include=FALSE}
 path_root <-
-  "C:/Users/kibi/OneDrive - Danmarks Tekniske Universitet/stock_coord_work/her.27.20-24/2025_her.27.20-24_RDBES_combined/"
+  "C:/Users/kibi/OneDrive - Danmarks Tekniske Universitet/stock_coord_work/her.27.20-24/2026_her.27.20-24_RDBES_combined/"
 
 # path_root <-
 #   "Q:/mynd/kibi/SC_work/her.27.20-24/2024_her.27.20-24_RDBES_combined/"
@@ -25,13 +25,13 @@ library(readxl)
 
 options(scipen = 9999)
 
-year_data <- 2024
+year_data <- 2025
 ```
 
 ```{r t_3_1_1, ft.align="left"}
 # Input ----
 dat_1 <-
-  read.csv(paste0("output/", "catch_no_sop_year_ctry_1989_", year_data, ".csv"))
+  read.csv(paste0(path_root, "output/", "catch_no_sop_year_ctry_1989_", year_data, ".csv"))
 
 
 # Transpose ----
@@ -58,24 +58,25 @@ dat_total_year <-
 
 dat_1_2 <- rbind(dat_1_1, dat_total_year)
 
+# dat_1_2$catch_1000t <- format(round(dat_1_2$catch_1000t, digits = 2), nsmall = 2)
 dat_1_2$catch_1000t <- round(dat_1_2$catch_1000t, digits = 2)
 
 dat_1_t <-
   spread(dat_1_2,
          key = ctry,
          value = catch_1000t,
-         fill = NA)
+         fill = 0)
 
-dat_1_t$Denmark[dat_1_t$Denmark == 0] <- NA
-dat_1_t$`Faroe Islands`[dat_1_t$`Faroe Islands` == 0] <- NA
-dat_1_t$Finland[dat_1_t$Finland == 0] <- NA
-dat_1_t$Germany[dat_1_t$Germany == 0] <- NA
-dat_1_t$Lithuania[dat_1_t$Lithuania == 0] <- NA
-dat_1_t$Netherlands[dat_1_t$Netherlands == 0] <- NA
-dat_1_t$Norway[dat_1_t$Norway == 0] <- NA
-dat_1_t$Poland[dat_1_t$Poland == 0] <- NA
-dat_1_t$Sweden[dat_1_t$Sweden == 0] <- NA
-dat_1_t$Total[dat_1_t$Total == 0] <- NA
+# dat_1_t$Denmark[dat_1_t$Denmark == 0] <- NA
+# dat_1_t$`Faroe Islands`[dat_1_t$`Faroe Islands` == 0] <- NA
+# dat_1_t$Finland[dat_1_t$Finland == 0] <- NA
+# dat_1_t$Germany[dat_1_t$Germany == 0] <- NA
+# dat_1_t$Lithuania[dat_1_t$Lithuania == 0] <- NA
+# # dat_1_t$Netherlands[dat_1_t$Netherlands == 0] <- NA
+# dat_1_t$Norway[dat_1_t$Norway == 0] <- NA
+# dat_1_t$Poland[dat_1_t$Poland == 0] <- NA
+# dat_1_t$Sweden[dat_1_t$Sweden == 0] <- NA
+# dat_1_t$Total[dat_1_t$Total == 0] <- NA
 
 dat_1_t$year <- as.character(dat_1_t$year)
 
@@ -139,6 +140,7 @@ t1
 # Input ----
 dat_2 <-
   read.csv(paste0(
+    path_root, 
     "output/",
     "catch_sop_year_fleet_quarter_2004_",
     year_data,
@@ -239,28 +241,30 @@ t2
 ```{r data_for_table_3_2, include = F, eval = T}
 
 canumF <-
-  readRDS(paste(
+  read.csv(paste(
+    path_root, 
     "data/",
-    "C5_her2024_canum_with_imputations_subfleets_",
+    "11_her2024_canum_with_imputations_",
     year_data,
-    ".rds",
+    ".csv",
     sep = ""
-  ))
+  ), sep = ";")
 
 canumF$caton_t<-canumF$canum_1000*(canumF$weca_g/1000)
 canumF$caton_t[is.na(canumF$caton_t)]<-0
 canumF$weca_g[is.na(canumF$weca_g)]<-0
 canumF$canum_mill<-canumF$canum_1000/1000
-
-impu <- read.csv(paste0("boot/data/imputations/", "C4_her2024_missing_bio_", year_data, "_filled.csv"), sep = ";")
-
-impu <- subset(impu,year == year_data)
+# 
+# impu <- read.csv(paste0("boot/data/imputations/", "C4_her2024_missing_bio_", year_data, "_filled.csv"), sep = ";")
+# 
+# impu <- subset(impu,year == year_data)
 
 
 canumFS <-
   readRDS(paste(
+    path_root,
     "data/",
-    "C6_her2024_canum_wbss_nsas_",
+    "21_C4_her2024_canum_wbss_nsas_",
     year_data,
     ".rds",
     sep = ""
@@ -300,12 +304,12 @@ canumF1 <-
 
 data_321 <-
   aggregate(
-    cbind(caton_t) ~ year + area + quarter + ctry + noSamples +
+    cbind(caton_t) ~ year + area + quarter + ctry + noSample +
       noLength + noAge + fleet + subFleet,
     data = canumF1,
     FUN = sum
   )
-data_321 <- rename(data_321, "SOP_1000t" = caton_t, "noSample" = noSamples)
+data_321 <- rename(data_321, "SOP_1000t" = caton_t, "noSample" = noSample)
 data_321 <-
   aggregate(
     cbind(SOP_1000t, noSample, noLength, noAge) ~ year + area + quarter + ctry +
@@ -386,50 +390,32 @@ t3
 
 ```{r t_3_2_2, ft.align="left", eval = T}
 
-impu <-
-  mutate(impu, comment2 = ifelse(
-    is.na(comment) |
-      comment == "",
-    paste0(
-      useYear,
-      " ",
-      useCtry,
-      " ",
-      useArea,
-      " ",
-      "fleet",
-      useSubFleet,
-      " ",
-      "Q",
-      useQuarter
-    ),
-    comment
-  ))
+impu <- canumF
 
 dat_322 <-
   subset(
     impu,
     area %in% c("27.3.a.20") &
-      ctry %in% c("Denmark", "Faroe Islands", "Germany", "Norway", "Sweden") & comment2 != "No landings" |
+      ctry %in% c("Denmark", "Faroe Islands", "Germany", "Norway", "Sweden") |
       area %in% c("27.3.a.21") &
-      ctry %in% c("Denmark", "Germany", "Sweden") & comment2 != "No landings" |
+      ctry %in% c("Denmark", "Germany", "Sweden")|
       area %in% c("27.3.c.22", "27.3.d.24") &
-      ctry %in% c("Denmark", "Germany", "Poland", "Sweden", "Finland") & comment2 != "No landings" |
+      ctry %in% c("Denmark", "Germany", "Poland", "Sweden", "Finland") |
       area %in% c("27.3.b.23")  &
-      ctry %in% c("Denmark", "Sweden") & comment2 != "No landings"
+      ctry %in% c("Denmark", "Sweden")
   )
 
 dat_322 <-
   summarise(
-    group_by(dat_322, year, area, ctry, quarter, subFleet, comment2),
+    group_by(dat_322, year, area, ctry, quarter, subFleet, level_used),
     catch_t = round(sum(catch_t, na.rm = F), digits = 1)
   )
 dat_322 <- arrange(dat_322, year, area, ctry, subFleet, quarter)
 
 dat_322 <-
-  select(dat_322, year, area, quarter, ctry, subFleet, catch_t, comment2)
+  select(dat_322, year, area, quarter, ctry, subFleet, catch_t, level_used)
 
-dat_322 <- rename(dat_322, sampling = comment2, 
+dat_322 <- rename(dat_322, `data used` = level_used, 
     `sub-fleet` = subFleet)
 
 dat_322 <- rename(dat_322, `catch (t)` = catch_t)
