@@ -8,9 +8,12 @@ output:
     theme: 
       primary: "#990000"
     source_code: embed
+    self_contained: true
 ---
 
 ```{r setup, include=FALSE}
+knitr::opts_chunk$set(ft.shadow = FALSE)
+
 library(flexdashboard)
 library(DT)
 library(dplyr)
