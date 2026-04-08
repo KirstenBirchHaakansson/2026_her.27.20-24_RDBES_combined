@@ -280,7 +280,7 @@ canumFS$nsas_canum_mill <- canumFS$nsas_canum_1000 / 1000
 canumFS$wbss_canum_mill <- canumFS$wbss_canum_1000 / 1000
 
 dat_327 <- read.csv(paste0("output/", "wbss_canum_weca_year_1993_", year_data, ".csv"), sep = ",")
-# dat_328 <- read.csv(paste0("output/", "nsas_canum_weca_sop_year_1993_", year_data, ".csv"), sep = ",")
+dat_328 <- read.csv(paste0("output/", "nsas_canum_weca_sop_year_1993_", year_data, ".csv"), sep = ",")
 
 ```
 
@@ -822,7 +822,7 @@ t9
 
 ```
 
-```{r t_3_2_8, ft.align="left", eval = F}
+```{r t_3_2_8, ft.align="left", eval = T}
 
 # names(dat_328)
 
