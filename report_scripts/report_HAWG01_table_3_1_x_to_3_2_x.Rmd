@@ -32,7 +32,7 @@ year_data <- 2025
 # Input ----
 dat_1 <-
   read.csv(paste0(path_root, "output/", "catch_no_sop_year_ctry_1989_", year_data, ".csv"))
-
+dat_1 <- subset(dat_1, year >= 1991)
 
 # Transpose ----
 # Tried out the pivot table package, but not too happy. It takes forever to run and is sometimes sum NA's to 0
@@ -101,7 +101,7 @@ t1 <- flextable(dat_1_t) %>%
   border_inner_h(part = "all") %>%
   set_caption(
     caption = paste0(
-      "Table 3.1.1 WESTERN BALTIC HERRING. Both WBSS and NSAS. Total catch in 1989-",
+      "Table 3.1.1 WESTERN BALTIC HERRING. Both WBSS and NSAS. Total catch in 1991-",
       year_data,
       " (1000 tonnes) by year, area and country. Data provided by working group members"
     ),
@@ -136,6 +136,49 @@ t1
 ```
 
 ```{r t_3_1_2, ft.align="left", eval = T}
+
+fleet_map <-
+  read.csv(paste(
+    path_root, 
+    "data/",
+    "11_her2024_canum_with_imputations_",
+    year_data,
+    ".csv",
+    sep = ""
+  ), sep = ";")
+
+fleet_map <- arrange(distinct(fleet_map, area, subFleet, fleet), area, subFleet, fleet)
+
+fleet_map <- rename(fleet_map, "sub-fleet" = "subFleet")
+
+# Flextable ----
+
+set_flextable_defaults(
+  font.family = "Calibri",
+  font.size = 7.5,
+  padding.bottom = 0,
+  padding.top = 0
+)
+
+t2 <- flextable(fleet_map) %>%
+  set_table_properties(width = 1, layout = "autofit") %>%
+  bold(part = "header") %>%
+  padding(padding.bottom = 0, part = "all") %>%
+  padding(padding.top = 0, part = "all") %>%
+  bg(bg = "#B7D1C3", part = "header") %>%
+  border_inner_h(part = "all") %>%
+  set_caption(
+    caption = paste0(
+      "Table 3.1.2 WESTERN BALTIC HERRING. Map bwtween data submission fleets (sub-fleet) and HAWG fleets"
+    ),
+    style = "Table Caption"
+  ) 
+
+t2
+```
+
+
+```{r t_3_1_3, ft.align="left", eval = T}
 
 # Input ----
 dat_2 <-
@@ -221,7 +264,7 @@ t2 <- flextable(dat_2_t) %>%
   border_inner_h(part = "all") %>%
   set_caption(
     caption = paste0(
-      "Table 3.1.2 WESTERN BALTIC HERRING. Both WBSS and NSAS. Catch (SOP, 1000 tonnes) in 2004-",
+      "Table 3.1.3 WESTERN BALTIC HERRING. Both WBSS and NSAS. Catch (SOP, 1000 tonnes) in 2000-",
       year_data,
       " by year, area, fleet and quarter"
     ),
